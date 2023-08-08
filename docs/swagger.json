@@ -1,0 +1,478 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/chat": {
+            "get": {
+                "tags": [
+                    "用户模块"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/contact/addFriend": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "添加好友",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userId",
+                        "name": "userId",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "targetName",
+                        "name": "targetName",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\",\"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/contact/createCommunity": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "创建群聊",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ownerId",
+                        "name": "ownerId",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "icon",
+                        "name": "icon",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "desc",
+                        "name": "desc",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\",\"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/contact/joinGroup": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "加入群聊",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userId",
+                        "name": "userId",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "comId",
+                        "name": "comId",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\",\"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/contact/loadcommunity": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "加载好友列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ownerId",
+                        "name": "ownerId",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\",\"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/index": {
+            "get": {
+                "tags": [
+                    "首页"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/searchFriends": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "搜索好友",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "userId",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\",\"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/toChat": {
+            "get": {
+                "tags": [
+                    "用户模块"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userid",
+                        "name": "UserId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/toRegister": {
+            "get": {
+                "tags": [
+                    "首页"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/createUser": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "新增用户",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "password",
+                        "name": "password",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Identity",
+                        "name": "Identity",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "phone",
+                        "name": "phone",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "email",
+                        "name": "email",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\",\"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/deleteUser": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "删除用户",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\",\"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/find": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "redis收发消息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userIdA",
+                        "name": "userIdA",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "userIdB",
+                        "name": "userIdB",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "start",
+                        "name": "start",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "end",
+                        "name": "end",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "isRev",
+                        "name": "isRev",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\",\"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/findUserByNameAndPwd": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "用户登录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "password",
+                        "name": "password",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\",\"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/getUserList": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "所有用户",
+                "responses": {
+                    "200": {
+                        "description": "code\",\"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/sendMsg": {
+            "get": {
+                "tags": [
+                    "消息模块"
+                ],
+                "summary": "发送消息",
+                "responses": {
+                    "200": {
+                        "description": "code\",\"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/sendUserMsg": {
+            "get": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "发送消息",
+                "responses": {
+                    "200": {
+                        "description": "code\",\"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/updateUser": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "修改用户",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "password",
+                        "name": "password",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "phone",
+                        "name": "phone",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "email",
+                        "name": "email",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\",\"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,301 @@
+info:
+  contact: {}
+paths:
+  /chat:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      tags:
+      - 用户模块
+  /contact/addFriend:
+    post:
+      parameters:
+      - description: userId
+        in: formData
+        name: userId
+        type: string
+      - description: targetName
+        in: formData
+        name: targetName
+        type: string
+      responses:
+        "200":
+          description: code","message"}
+          schema:
+            type: string
+      summary: 添加好友
+      tags:
+      - 用户模块
+  /contact/createCommunity:
+    post:
+      parameters:
+      - description: ownerId
+        in: formData
+        name: ownerId
+        type: string
+      - description: name
+        in: formData
+        name: name
+        type: string
+      - description: icon
+        in: formData
+        name: icon
+        type: string
+      - description: desc
+        in: formData
+        name: desc
+        type: string
+      responses:
+        "200":
+          description: code","message"}
+          schema:
+            type: string
+      summary: 创建群聊
+      tags:
+      - 用户模块
+  /contact/joinGroup:
+    post:
+      parameters:
+      - description: userId
+        in: formData
+        name: userId
+        type: string
+      - description: comId
+        in: formData
+        name: comId
+        type: string
+      responses:
+        "200":
+          description: code","message"}
+          schema:
+            type: string
+      summary: 加入群聊
+      tags:
+      - 用户模块
+  /contact/loadcommunity:
+    post:
+      parameters:
+      - description: ownerId
+        in: formData
+        name: ownerId
+        type: string
+      responses:
+        "200":
+          description: code","message"}
+          schema:
+            type: string
+      summary: 加载好友列表
+      tags:
+      - 用户模块
+  /index:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      tags:
+      - 首页
+  /searchFriends:
+    post:
+      parameters:
+      - description: id
+        in: formData
+        name: userId
+        type: string
+      responses:
+        "200":
+          description: code","message"}
+          schema:
+            type: string
+      summary: 搜索好友
+      tags:
+      - 用户模块
+  /toChat:
+    get:
+      parameters:
+      - description: userid
+        in: query
+        name: UserId
+        type: string
+      - description: token
+        in: query
+        name: token
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      tags:
+      - 用户模块
+  /toRegister:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      tags:
+      - 首页
+  /user/createUser:
+    post:
+      parameters:
+      - description: name
+        in: formData
+        name: name
+        type: string
+      - description: password
+        in: formData
+        name: password
+        type: string
+      - description: Identity
+        in: formData
+        name: Identity
+        type: string
+      - description: phone
+        in: formData
+        name: phone
+        type: string
+      - description: email
+        in: formData
+        name: email
+        type: string
+      responses:
+        "200":
+          description: code","message"}
+          schema:
+            type: string
+      summary: 新增用户
+      tags:
+      - 用户模块
+  /user/deleteUser:
+    post:
+      parameters:
+      - description: id
+        in: formData
+        name: id
+        type: string
+      responses:
+        "200":
+          description: code","message"}
+          schema:
+            type: string
+      summary: 删除用户
+      tags:
+      - 用户模块
+  /user/find:
+    post:
+      parameters:
+      - description: userIdA
+        in: formData
+        name: userIdA
+        type: string
+      - description: userIdB
+        in: formData
+        name: userIdB
+        type: string
+      - description: start
+        in: formData
+        name: start
+        type: string
+      - description: end
+        in: formData
+        name: end
+        type: string
+      - description: isRev
+        in: formData
+        name: isRev
+        type: string
+      responses:
+        "200":
+          description: code","message"}
+          schema:
+            type: string
+      summary: redis收发消息
+      tags:
+      - 用户模块
+  /user/findUserByNameAndPwd:
+    post:
+      parameters:
+      - description: name
+        in: formData
+        name: name
+        type: string
+      - description: password
+        in: formData
+        name: password
+        type: string
+      responses:
+        "200":
+          description: code","message"}
+          schema:
+            type: string
+      summary: 用户登录
+      tags:
+      - 用户模块
+  /user/getUserList:
+    post:
+      responses:
+        "200":
+          description: code","message"}
+          schema:
+            type: string
+      summary: 所有用户
+      tags:
+      - 用户模块
+  /user/sendMsg:
+    get:
+      responses:
+        "200":
+          description: code","message"}
+          schema:
+            type: string
+      summary: 发送消息
+      tags:
+      - 消息模块
+  /user/sendUserMsg:
+    get:
+      responses:
+        "200":
+          description: code","message"}
+          schema:
+            type: string
+      summary: 发送消息
+      tags:
+      - 用户模块
+  /user/updateUser:
+    post:
+      parameters:
+      - description: id
+        in: formData
+        name: id
+        type: string
+      - description: name
+        in: formData
+        name: name
+        type: string
+      - description: password
+        in: formData
+        name: password
+        type: string
+      - description: phone
+        in: formData
+        name: phone
+        type: string
+      - description: email
+        in: formData
+        name: email
+        type: string
+      responses:
+        "200":
+          description: code","message"}
+          schema:
+            type: string
+      summary: 修改用户
+      tags:
+      - 用户模块
+swagger: "2.0"
