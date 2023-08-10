@@ -2,9 +2,9 @@ mysql:
   dns: root:791975457@qq.com@tcp(127.0.0.1:3306)/ginchat?charset=utf8mb4&parseTime=True&loc=Local
 
 redis:
-  addr: "r-bp13spatn5nmym8xqnpd.redis.rds.aliyuncs.com:6379"
-  password: "r-bp13spatn5nmym8xqn:791975457@qqcom"
-  DB: 1
+  addr: "127.0.0.1:6379"
+  password: "791975457@qq.com"
+  DB: 0
   poolSize: 30
   minIdleConn: 30
 
