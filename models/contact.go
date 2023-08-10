@@ -2,7 +2,7 @@ package models
 
 import (
 	"gorm.io/gorm"
-	"imessage/utils"
+	"local_imessage/utils"
 )
 
 type Contact struct {

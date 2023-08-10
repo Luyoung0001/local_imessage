@@ -2,7 +2,7 @@ package models
 
 import (
 	"context"
-	"imessage/utils"
+	"local_imessage/utils"
 	"time"
 )
 

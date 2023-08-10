@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"imessage/models"
+	"local_imessage/models"
 )
 
 var (

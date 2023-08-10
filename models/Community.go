@@ -3,7 +3,7 @@ package models
 import (
 	"fmt"
 	"gorm.io/gorm"
-	"imessage/utils"
+	"local_imessage/utils"
 )
 
 type Community struct {
