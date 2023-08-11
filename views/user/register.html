@@ -1,72 +1,87 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
-    <title>IM解决方案</title>
-    <link rel="stylesheet" href="/asset/plugins/mui/css/mui.css" />
-    <link rel="stylesheet" href="/asset/css/login.css" />
-    <link rel="icon" href="asset/images/favicon.ico" type="image/x-icon" />
-    <script src="/asset/plugins/mui/js/mui.js"></script>
-    <script src="/asset/js/vue.min.js"></script>
-    <script src="/asset/js/util.js"></script>
-</head>
-
-<body>
-
-    <header class="mui-bar mui-bar-nav">
-        <h1 class="mui-title">注册</h1>
-    </header>
-    <div class="mui-content register-page" id="pageapp">
-        <form id='login-form' class="mui-input-group register-form">
-            <div class="mui-input-row">
-                <input v-model="user.name" placeholder="请输入用户名" type="text" class="mui-input-clear mui-input">
-            </div>
-            <div class="mui-input-row">
-                <input v-model="user.password" placeholder="请输入密码" type="password" class="mui-input-clear mui-input">
-            </div>
-            <div class="mui-input-row">
-                <input v-model="user.Identity" placeholder="再输入密码" type="password" class="mui-input-clear mui-input">
-            </div>
-        </form>
-        <div class="mui-content-padded">
-            <button @click="login" type="button" class="mui-btn mui-btn-block mui-btn-primary btn-register">注册</button>
-            <div class="link-area"><a id='reg' href="/index">登录账号</a> <span class="spliter">|</span> <a
-                    id='forgetPassword'>忘记密码</a>
-            </div>
-        </div>
-        <div class="mui-content-padded oauth-area">
-        </div>
-    </div>
-</body>
-
-</html>
-<script>
-    var app = new Vue({
-        el: "#pageapp",
-        data: function () {
-            return {
-                user: {
-                    name: "",
-                    password: "",
-                    Identity: "",
-                }
-            }
-        },
-        methods: {
-            login: function () {
-                //检测密码是否为空
-                console.log(this.user)
-                util.post("/user/createUser", this.user).then(res => {
-                    console.log(res)
-                    if (res.code != 0) {
-                        mui.toast(res.message)
-                    } else {
-                        location.href = "/"
-                        mui.toast("注册成功,即将跳转")
-                    }
-                })
-            },
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册你的账号!</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
         }
-    })
-</script>
+        .container {
+            width: 300px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            text-align: center;
+        }
+        .container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        input[type="button"],
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        input[type="button"]:hover,
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>注册你的账号!</h2>
+    <form>
+        <div class="input-group">
+            <label for="phone">请输入你的电话号码:</label>
+            <input type="text" id="phone" name="phone" placeholder="13888888888">
+        </div>
+        <div class="input-group">
+            <label for="username">请输入你的用户名:</label>
+            <input type="text" id="username" name="username" placeholder="用户名">
+        </div>
+        <div class="input-group">
+            <label for="password">请输入你的密码:</label>
+            <input type="password" id="password" name="password" placeholder="密码">
+        </div>
+        <div class="input-group">
+            <label for="verification">请输入你的验证码:</label>
+            <input type="text" id="verification" name="certicode" placeholder="验证码5分钟有效">
+            <input type="button" value="发送验证码">
+        </div>
+        <input type="submit" value="注册">
+    </form>
+</div>
+</body>
+</html>

@@ -11,7 +11,6 @@ import (
 func main() {
 	// 初始化
 	utils.InitConfig()
-	utils.InitMySQL()
 	utils.InitRedis()
 	InitTimer()
 	// 路由

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>密码找回</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f4f4;
+    }
+    .container {
+      width: 300px;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      border-radius: 5px;
+      text-align: center;
+    }
+    .container h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .input-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+      font-weight: bold;
+    }
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+    input[type="button"] {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    input[type="button"]:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>密码找回</h2>
+  <form>
+    <div class="input-group">
+      <label for="phone">请输入你的电话号码:</label>
+      <input type="text" id="phone" name="phone" placeholder="13888888888">
+    </div>
+    <div class="input-group">
+      <label>点击发送验证码:</label>
+      <input type="button" value="发送验证码">
+    </div>
+    <div class="input-group">
+      <label for="password1">请输入密码:</label>
+      <input type="password" id="password1" name="password1" placeholder="第一次输入的密码">
+    </div>
+    <div class="input-group">
+      <label for="password2">请再次输入密码:</label>
+      <input type="password" id="password2" name="password2" placeholder="第二次输入的密码">
+    </div>
+    <div class="input-group">
+      <label for="verification">请输入你的验证码:</label>
+      <input type="text" id="verification" name="certicode" placeholder="验证码">
+      <input type="button" value="确认重置">
+    </div>
+  </form>
+</div>
+</body>
+</html>

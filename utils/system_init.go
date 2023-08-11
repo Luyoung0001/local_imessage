@@ -5,16 +5,9 @@ import (
 	"fmt"
 	"github.com/go-redis/redis/v8"
 	"github.com/spf13/viper"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
-	"log"
-	"os"
-	"time"
 )
 
 var (
-	DB  *gorm.DB
 	Red *redis.Client
 )
 
@@ -27,22 +20,6 @@ func InitConfig() {
 	}
 	fmt.Println("config app:", viper.Get("config.app"))
 
-}
-
-// 初始化数据库MySQL
-
-func InitMySQL() {
-	// 日志
-	newLogger := logger.New(
-		log.New(os.Stdout, "\r\n", log.LstdFlags),
-		logger.Config{
-			SlowThreshold: time.Second,
-			LogLevel:      logger.Info,
-			Colorful:      true,
-		})
-	// 连接数据库
-	DB, _ = gorm.Open(mysql.Open(viper.GetString("mysql.dns")), &gorm.Config{Logger: newLogger})
-	fmt.Println("config mysql:", viper.Get("mysql"))
 }
 
 // 初始化 Redis

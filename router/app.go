@@ -33,14 +33,14 @@ func Router() *gin.Engine {
 	r.POST("/contact/friendsStatus", service.FriendsStatus) // 实现显示好友在线状态
 	r.POST("/contact/blockFriend", service.BlockFriend)     // 实现屏蔽好友消息
 	// 群
-	r.POST("/contact/createCommunity", service.CreateCommunity)     // 创建群
-	r.POST("/contact/deCommunity", service.DeleteCommunity)         // 解散群
-	r.POST("/contact/outCommunity", service.OutCommunity)           // 用户退出群聊
-	r.POST("/contact/ownerManCommunity", service.OwnerManCommunity) // 实现群主对群组管理员的添加和删除
-	r.POST("/contact/manManCommunity", service.ManManCommunity)     // 实现群组管理员/群主从群组中移除用户
-	r.POST("/contact/allowCommunity", service.AllowCommunity)       // 实现群组管理员,群主批准用户加入群组
-	r.POST("/contact/loadcommunity", service.LoadCommunity)         // 群列表
-	r.POST("/contact/joinGroup", service.JoinGroups)                // 添加群聊
+	r.POST("/contact/createGroup", service.CreateGroup)     // 创建群
+	r.POST("/contact/deGroup", service.DeleteGroup)         // 解散群
+	r.POST("/contact/outGroup", service.OutGroup)           // 用户退出群聊
+	r.POST("/contact/ownerManGroup", service.OwnerManGroup) // 实现群主对群组管理员的添加和删除
+	r.POST("/contact/manManGroup", service.ManManGroup)     // 实现群组管理员/群主从群组中移除用户
+	r.POST("/contact/allowGroup", service.AllowGroup)       // 实现群组管理员,群主批准用户加入群组
+	r.POST("/contact/loadGroup", service.LoadGroup)         // 群列表
+	r.POST("/contact/joinGroup", service.JoinGroup)         // 添加群聊
 	// 用户模块
 	r.POST("/user/createUser", service.CreateUser)   // 增加用户
 	r.POST("/user/getUserList", service.GetUserList) // 获取用户列表

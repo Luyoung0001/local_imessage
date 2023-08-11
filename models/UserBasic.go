@@ -1,18 +1,25 @@
 package models
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
-	"gorm.io/gorm"
 	"local_imessage/utils"
+	"log"
 	"time"
 )
 
+// 设计原则:底层干最简单的事情,将控制全部放在上层,上层拥有最高的灵活度和可设计性
+
+var userLists []*UserBasic
+
 type UserBasic struct {
-	gorm.Model
+	// 加密后的字符串
+	UID           string // 由OldPhone 生成,且永远不变,用户唯一表示符
+	OldPhone      string
+	NewPhone      string
 	Name          string
 	PassWord      string
-	Phone         string `valid:"matches(^1[3-9]{1}\\d{9}$)"`
-	Email         string `valid:"email"`
 	Identity      string
 	ClientIP      string
 	ClientPort    string
@@ -24,93 +31,178 @@ type UserBasic struct {
 	DeviceInfo    string
 }
 
+// 返回 name
+
 func (table *UserBasic) TableName() string {
 	return "user_basic"
 }
+
+// 返回所有的用户列表
+
 func GetUserList() []*UserBasic {
-	data := make([]*UserBasic, 10)
-	utils.DB.Find(&data)
-
-	//for _, v := range data {
-	//	fmt.Println(v)
-	//}
-	return data
+	ctx := context.Background()
+	var keys []string
+	// 获取所有键
+	keys, err := utils.Red.Keys(ctx, "*").Result()
+	if err != nil {
+		log.Fatal(err)
+	}
+	// 遍历每个键，获取值
+	for _, key := range keys {
+		value, err := utils.Red.Get(ctx, key).Result()
+		var userInfo UserBasic
+		if err != nil {
+			log.Println("Error:", err)
+			continue
+		}
+		// 反序列化
+		err = json.Unmarshal([]byte(value), &userInfo)
+		if err != nil {
+			return nil
+		}
+		// 添加到 values
+		userLists = append(userLists, &userInfo)
+	}
+	return userLists
 }
 
-// 通过密码和用户名来查询用户
+// 通过密码和用户名来查询
+// 就是在做登录校验
 
-func FindUserByNameAndPwd(name, password string) UserBasic {
+func FindUserByUIDAndPwd(UID, password string) UserBasic {
 	// password 是加密后的字符串
-	user := UserBasic{}
-	utils.DB.Where("name = ? and pass_word = ?", name, password).First(&user)
-
-	// token 加密
-
-	str := fmt.Sprintf("%d", time.Now().Unix())
-	temp := utils.MD5Encode(str)
-
-	utils.DB.Where("name = ?", user.Name).Update("identity", temp)
-	utils.DB.Model(&user).Update("identity", temp)
-	return user
+	ctx := context.Background()
+	userString, err := utils.Red.Get(ctx, UID).Result()
+	if err != nil {
+		fmt.Println(err)
+		return UserBasic{}
+	}
+	// 反序列化
+	var user UserBasic
+	err = json.Unmarshal([]byte(userString), &user)
+	if err != nil {
+		return UserBasic{}
+	}
+	// 判断
+	if user.PassWord == password {
+		return user
+	} else {
+		fmt.Println("密码错误!")
+	}
+	return UserBasic{}
 }
 
-// 通过用户姓名定位到一个人
+// 通过用户姓名定位到一群人
 
-func FindUserByName(name string) UserBasic {
-	user := UserBasic{}
-	utils.DB.Where("name = ?", name).First(&user)
-	return user
+func FindUserByName(name string) []*UserBasic {
+	userLists = GetUserList()
+	var nameLists []*UserBasic
+	for _, user := range userLists {
+		if user.Name == name {
+			nameLists = append(nameLists, user)
+		}
+	}
+	return nameLists
 }
 
 // 通过电话号码定位到一个人
 
 func FindUserByPhone(phone string) UserBasic {
-	user := UserBasic{}
-	utils.DB.Where("phone = ?", phone).First(&user)
-	return user
+	// 为了保护隐私 只能通过新电话定位到一个人
+	userLists = GetUserList()
+	for _, user := range userLists {
+		if user.NewPhone == phone {
+			return *user
+		}
+	}
+	return UserBasic{}
 }
 
-// 通过邮箱定位到一个人
+// 创建用户
 
-func FindUserByEmail(email string) UserBasic {
-	user := UserBasic{}
-	utils.DB.Where("email = ?", email).First(&user)
-	return user
+func CreateUser(user UserBasic) {
+	// 这个用户只传回了
+	// user.OldPhone
+	// user.Name
+	// user.PassWord
+	user.NewPhone = user.OldPhone
+
+	ctx := context.Background()
+
+	// 获取Phone
+	phone := user.OldPhone
+	// 创造 userId
+	UID := utils.MD5Encode(phone)
+	// 将用户对象序列化为 JSON
+	userJSON, err := json.Marshal(user)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// 存储用户数据到 Redis
+	err = utils.Red.Set(ctx, UID, userJSON, 0).Err()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
-func CreateUser(user UserBasic) *gorm.DB {
-	return utils.DB.Create(&user)
+func DeleteUser(user UserBasic) {
+	ctx := context.Background()
+
+	// 要删除的用户键
+	userKey := user.UID
+
+	// 删除用户
+	deleted, err := utils.Red.Del(ctx, userKey).Result()
+	if err != nil {
+		log.Println("Error:", err)
+		return
+	}
+	if deleted > 0 {
+		fmt.Printf("User with key '%s' deleted.\n", userKey)
+	} else {
+		fmt.Printf("User with key '%s' not found.\n", userKey)
+	}
 }
 
-func DeleteUser(user UserBasic) *gorm.DB {
-	return utils.DB.Delete(&user)
-}
+// 更新用户信息
 
-func UpdateUser(user UserBasic) *gorm.DB {
-	return utils.DB.Model(&user).Updates(UserBasic{Name: user.Name, PassWord: user.PassWord, Phone: user.Phone, Email: user.Email, Salt: user.Salt})
+func UpdateUser(user UserBasic) {
+	ctx := context.Background()
+	// 序列化更新后的结构体为 JSON
+	updatedJSON, err := json.Marshal(user)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// 存储更新后的值回 Redis
+	err = utils.Red.Set(ctx, user.UID, updatedJSON, 0).Err()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
-func IsUniqueUpdateUser(user UserBasic) bool {
-	data1 := FindUserByName(user.Name)
-	data2 := FindUserByPhone(user.Phone)
-	data3 := FindUserByEmail(user.Email)
-	// 同时还得检查被搜到的 id 是否和自己一样,如果一样,那就说明可以修改;否则就不能修改
-	if data1.Name != "" && data1.ID != user.ID || data2.Phone != "" && data2.ID != user.ID || data3.Email != "" && data3.ID != user.ID {
-		return false
+func IsUnique(user UserBasic) bool {
+	currentPhone := user.NewPhone
+	// 要更新一个值,就要判断要更新的新的电话号码是否已经被别的用户使用
+	// 因此这里只判断电话号码是否被注册过(查看 NewPhone 即可,OldPhone 已被校验)
+	// 遍历
+	// 初始化游标
+	userLists = GetUserList()
+	for _, item := range userLists {
+		if item.NewPhone == currentPhone {
+			return false
+		}
 	}
 	return true
-}
-func IsUniqueCreateUser(user UserBasic) bool {
-	data1 := FindUserByName(user.Name)
-	data2 := FindUserByPhone(user.Phone)
-	data3 := FindUserByEmail(user.Email)
-	if data1.Name != "" || data2.Phone != "" || data3.Email != "" {
-		return false
-	}
-	return true
+
 }
 
-func FindByID(id uint) UserBasic {
-	user := UserBasic{}
-	utils.DB.Where("id = ?", id).First(&user)
-	return user
+// 按照 UID 进行查询
+
+func FindUserByUID(uid string) UserBasic {
+	userLists = GetUserList()
+	for _, user := range userLists {
+		if user.UID == uid {
+			return *user
+		}
+	}
+	return UserBasic{}
 }

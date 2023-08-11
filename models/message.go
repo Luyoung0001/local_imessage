@@ -26,8 +26,8 @@ func init() {
 
 type Message struct {
 	gorm.Model
-	UserId     int64  // 发送者
-	TargetId   int64  // 接收者
+	UserId     string // 发送者
+	TargetId   string // 接收者
 	Type       int    // 发送类型: 群聊,私聊,广播等
 	Media      int    // 文字,图片,音频
 	Content    string // 消息内容
@@ -365,26 +365,6 @@ func sendGroupMsg(targetId int64, msg []byte) {
 			sendMsg(int64(userIds[i]), msg)
 		}
 
-	}
-}
-func JoinGroup(userId uint, comId string) (int, string) {
-	contact := Contact{}
-	contact.OwnerId = userId
-	contact.Type = 2
-	community := Community{}
-
-	utils.DB.Where("id=? or name=?", comId, comId).Find(&community)
-	if community.Name == "" {
-		return -1, "没有找到群"
-	}
-	utils.DB.Where("owner_id = ? and target_id = ? and type = 2 ", userId, comId).Find(&contact)
-	if !contact.CreatedAt.IsZero() {
-		// 已加过群,就不能继续加群
-		return -1, "已加过此群"
-	} else {
-		contact.TargetId = community.ID
-		utils.DB.Create(&contact)
-		return 0, "加群成功"
 	}
 }
 
