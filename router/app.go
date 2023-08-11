@@ -25,13 +25,14 @@ func Router() *gin.Engine {
 	r.GET("/toRegister", service.ToRegister)        // 用户注册
 	r.GET("/toChat", service.ToChat)                // 聊天页面
 	r.POST("/contact/addFriend", service.AddFriend) // 添加好友页面
-	r.POST("/searchFriends", service.SearchFriends) // 返回好友列表
+	r.POST("/searchFriends", service.FriendList)    // 返回好友列表
 	r.POST("/findPassword", service.FindPassword)   // 利用手机验证码找回密码
 	r.POST("/unRegister", service.UnRegister)       // 注销页面
 	// 好友管理
 	r.POST("/contact/deFriend", service.DeleteFriend)       // 删除好友
 	r.POST("/contact/friendsStatus", service.FriendsStatus) // 实现显示好友在线状态
 	r.POST("/contact/blockFriend", service.BlockFriend)     // 实现屏蔽好友消息
+
 	// 群
 	r.POST("/contact/createGroup", service.CreateGroup)     // 创建群
 	r.POST("/contact/deGroup", service.DeleteGroup)         // 解散群
@@ -46,9 +47,9 @@ func Router() *gin.Engine {
 	r.POST("/user/getUserList", service.GetUserList) // 获取用户列表
 	r.POST("/user/deleteUser", service.DeleteUser)   // 删除用户
 	r.POST("/user/updateUser", service.UpdateUser)   // 更新用户
-	r.POST("/user/findUserByNameAndPwd", service.FindUserByNameAndPwd)
-	r.POST("/user/login", service.FindUserByNameAndPwd)
-	r.POST("/user/find", service.FindByID)
+	r.POST("/user/findUserByNameAndPwd", service.FindUserByUIDAndPwd)
+	r.POST("/user/findUserByPhoneAndPwd", service.FindUserByPhoneAndPwd)
+	r.POST("/user/login", service.Login)
 
 	// 发送消息
 	//聊天功能

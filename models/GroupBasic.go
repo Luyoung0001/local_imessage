@@ -54,6 +54,23 @@ func AddMan(userId, groupId string) {
 	ctx := context.Background()
 	// 给 group 的字段增加新的对象,之后更新
 	// 查询群
-	utils.Red.Get(ctx, groupId).Result()
-
+	groupRaw, err := utils.Red.Get(ctx, groupId).Result()
+	if err != nil {
+		log.Fatal(err)
+	}
+	// 反序列化
+	var currentGroup GroupBasic
+	err = json.Unmarshal([]byte(groupRaw), &currentGroup)
+	// 修改
+	currentGroup.ManagerIDs = append(currentGroup.ManagerIDs, userId)
+	// 序列化
+	currentJSON, err := json.Marshal(currentGroup)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// 重新存储
+	err = utils.Red.Set(ctx, currentGroup.GroupID, currentJSON, 0).Err()
+	if err != nil {
+		log.Fatal(err)
+	}
 }

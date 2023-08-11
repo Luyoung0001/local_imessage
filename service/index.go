@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"html/template"
 	"local_imessage/models"
-	"strconv"
 )
 
 // GetIndex
@@ -45,28 +44,6 @@ func ToRegister(c *gin.Context) {
 // @Success 200 {string} welcome
 // @Router /toChat [get]
 func ToChat(c *gin.Context) {
-	ind, err := template.ParseFiles("/Users/luliang/GoLand/local_imessage/views/chat/index.html",
-		"/Users/luliang/GoLand/local_imessage/views/chat/head.html",
-		"/Users/luliang/GoLand/local_imessage/views/chat/foot.html",
-		"/Users/luliang/GoLand/local_imessage/views/chat/tabmenu.html",
-		"/Users/luliang/GoLand/local_imessage/views/chat/concat.html",
-		"/Users/luliang/GoLand/local_imessage/views/chat/group.html",
-		"/Users/luliang/GoLand/local_imessage/views/chat/profile.html",
-		"/Users/luliang/GoLand/local_imessage/views/chat/createcom.html",
-		"/Users/luliang/GoLand/local_imessage/views/chat/userinfo.html",
-		"/Users/luliang/GoLand/local_imessage/views/chat/main.html")
-	if err != nil {
-		panic(err)
-	}
-	userId, _ := strconv.Atoi(c.Query("userId")) // int
-	token := c.Query("token")
-	user := models.UserBasic{}
-	user.ID = uint(userId) // 转化成 uint
-	user.Identity = token
-	err = ind.Execute(c.Writer, user)
-	if err != nil {
-		return
-	}
 
 }
 

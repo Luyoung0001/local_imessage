@@ -120,7 +120,7 @@ func FindUserByPhone(phone string) UserBasic {
 
 // 创建用户
 
-func CreateUser(user UserBasic) {
+func CreateUser(user UserBasic) bool {
 	// 这个用户只传回了
 	// user.OldPhone
 	// user.Name
@@ -137,15 +137,18 @@ func CreateUser(user UserBasic) {
 	userJSON, err := json.Marshal(user)
 	if err != nil {
 		log.Fatal(err)
+		return false
 	}
 	// 存储用户数据到 Redis
 	err = utils.Red.Set(ctx, UID, userJSON, 0).Err()
 	if err != nil {
 		log.Fatal(err)
+		return false
 	}
+	return true
 }
 
-func DeleteUser(user UserBasic) {
+func DeleteUser(user UserBasic) bool {
 	ctx := context.Background()
 
 	// 要删除的用户键
@@ -155,29 +158,34 @@ func DeleteUser(user UserBasic) {
 	deleted, err := utils.Red.Del(ctx, userKey).Result()
 	if err != nil {
 		log.Println("Error:", err)
-		return
+		return false
 	}
 	if deleted > 0 {
 		fmt.Printf("User with key '%s' deleted.\n", userKey)
 	} else {
 		fmt.Printf("User with key '%s' not found.\n", userKey)
+		return false
 	}
+	return true
 }
 
 // 更新用户信息
 
-func UpdateUser(user UserBasic) {
+func UpdateUser(user UserBasic) bool {
 	ctx := context.Background()
 	// 序列化更新后的结构体为 JSON
 	updatedJSON, err := json.Marshal(user)
 	if err != nil {
 		log.Fatal(err)
+		return false
 	}
 	// 存储更新后的值回 Redis
 	err = utils.Red.Set(ctx, user.UID, updatedJSON, 0).Err()
 	if err != nil {
 		log.Fatal(err)
+		return false
 	}
+	return true
 }
 func IsUnique(user UserBasic) bool {
 	currentPhone := user.NewPhone

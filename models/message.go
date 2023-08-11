@@ -53,7 +53,7 @@ func (table *Message) TableName() string {
 }
 
 // 映射关系
-var clientMap = make(map[int64]*Node, 0)
+var clientMap = make(map[string]*Node, 0)
 
 // 读写锁
 var rwLocker sync.RWMutex
@@ -257,7 +257,7 @@ func disPatch(data []byte) {
 	}
 	fmt.Println("disPatch ends...")
 }
-func sendMsg(targetId int64, data []byte) {
+func sendMsg(targetId string, data []byte) {
 	fmt.Println("sendMsg...")
 	rwLocker.RLock()
 	node, ok := clientMap[targetId]
@@ -357,12 +357,12 @@ func RedisMsg(userIdA int64, userIdB int64, start int64, end int64, isRev bool) 
 }
 
 // 群发就是给每一个人都发消息
-func sendGroupMsg(targetId int64, msg []byte) {
-	userIds := SearchUserByGroupId(uint(targetId))
+func sendGroupMsg(targetId string, msg []byte) {
+	userIds := SearchUsersByGroupId(targetId)
 	for i := 0; i < len(userIds); i++ {
 		//排除给自己的
-		if targetId != int64(userIds[i]) {
-			sendMsg(int64(userIds[i]), msg)
+		if targetId != userIds[i].UID {
+			sendMsg(userIds[i].UID, msg)
 		}
 
 	}
