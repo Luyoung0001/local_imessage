@@ -12,40 +12,70 @@ type GroupBasic struct {
 	GroupID    string   // 群ID,由群主的 ID 生成
 	OwnerUID   string   // 群主
 	ManagerIDs []string // 管理员们
-	Icon       string
-	Desc       string
-	Type       string // 保留字段,预留
-
 }
 
 func (table *GroupBasic) TableName() string {
 	return "groupBasic"
 }
 
+// 查看所有的群
+
+func GetGroupList() []*GroupBasic {
+	var groupList []*GroupBasic
+	ctx := context.Background()
+	var keys []string
+	// 获取所有键
+	keys, err := utils.Red.Keys(ctx, "*").Result()
+	if err != nil {
+		log.Fatal(err)
+	}
+	// 遍历每个键，获取值
+	for _, key := range keys {
+		value, err := utils.Red.Get(ctx, key).Result()
+		var groupInfo GroupBasic
+		if err != nil {
+			log.Println("Error:", err)
+			continue
+		}
+		// 反序列化
+		err = json.Unmarshal([]byte(value), &groupInfo)
+		if err != nil {
+			return nil
+		}
+		// 添加到 values
+		groupList = append(groupList, &groupInfo)
+	}
+	return groupList
+}
+
 // 创建群
 
-func CreatGroup(userId string, group GroupBasic) {
+func CreatGroup(group GroupBasic) bool {
 	// group 字段有:
-	// Name 等
+	// Name
+	// ownerId
+
 	// Id 需要生成
 	ctx := context.Background()
 	// userId 创建了一个群聊,然后将整个群视为 UserBasic 处理
 	// 将群序列化后存储
 	// 获取 key
-	groupId := utils.MD5Encode(userId)
+	groupId := utils.MD5Encode(group.OwnerUID)
 
 	group.GroupID = groupId
-	group.OwnerUID = userId
 	// 序列化
 	groupJSON, err := json.Marshal(group)
 	if err != nil {
 		log.Fatal(err)
+		return false
 	}
 	// 存储
 	err = utils.Red.Set(ctx, groupId, groupJSON, 0).Err()
 	if err != nil {
 		log.Fatal(err)
+		return false
 	}
+	return true
 }
 
 // 添加管理员
@@ -73,4 +103,73 @@ func AddMan(userId, groupId string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+// 通过群 ID 找 group
+
+func FindGroupByGID(gid string) GroupBasic {
+	var groupList []*GroupBasic
+	groupList = GetGroupList()
+	for _, each := range groupList {
+		if each.GroupID == gid {
+			return *each
+		}
+	}
+	return GroupBasic{}
+}
+
+// 鉴定权限
+
+func LeverUserInGroup(operatorId, groupId, userId string) bool {
+	ctx := context.Background()
+	group := FindGroupByGID(groupId)
+	// 谁能删除谁?
+	// 1. 群主可以删除任何人,想要删除自己,群主可以直接删除群聊
+	// 2. 管理员仅仅可以删除普通成员,想要删除自己,可以自己退群
+	// 3. 普通成员不可以删除任何人,想要删除自己,可以自己退群
+
+	// 鉴定权限
+	// 1.operator 是那一个级别?
+	// 1:群主,0:管理员,-1:普通成员
+	var leverOp int
+	if group.OwnerUID == operatorId {
+		leverOp = 1
+	} else if stringInSlice(operatorId, group.ManagerIDs) {
+		leverOp = 0
+	} else {
+		leverOp = -1
+	}
+
+	// 2.被删除对象 userId 是哪一个级别?
+	var leverUser int
+	if group.OwnerUID == userId {
+		leverUser = 1
+	} else if stringInSlice(userId, group.ManagerIDs) {
+		leverUser = 0
+	} else {
+		leverUser = -1
+	}
+	// 比较
+	if leverOp > leverUser {
+		// 删除群的成员
+		// 调用 DeleteFriend()
+		DeleteFriend(userId, groupId)
+		// 如果是管理员,继续修改管理员列表
+		if leverUser == 1 {
+			// 修改 group.ManagerIDs 字段
+			group.ManagerIDs = removeFromSliceUsingCopy(group.ManagerIDs, userId)
+			// 序列化
+			groupJSON, err := json.Marshal(group)
+			if err != nil {
+				log.Fatal(err)
+				return false
+			}
+			// 存储
+			utils.Red.Set(ctx, group.GroupID, groupJSON, 0)
+		}
+		return true
+	} else {
+		return false
+	}
+
 }

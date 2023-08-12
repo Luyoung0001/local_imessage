@@ -24,13 +24,29 @@ func GetIndex(c *gin.Context) {
 // ToRegister
 // @Tags 首页
 // @Success 200 {string} welcome
-// @Router /toRegister [get]
+// @Router /toRegister [post]
 func ToRegister(c *gin.Context) {
 	ind, err := template.ParseFiles("/Users/luliang/GoLand/local_imessage/views/user/register.html")
 	if err != nil {
 		panic(err)
 	}
 	err = ind.Execute(c.Writer, "register")
+	if err != nil {
+		return
+	}
+
+}
+
+// Login
+// @Tags 登录
+// @Success 200 {string} welcome
+// @Router /toRegister [get]
+func Login(c *gin.Context) {
+	ind, err := template.ParseFiles("/Users/luliang/GoLand/local_imessage/views/user/register.html")
+	if err != nil {
+		panic(err)
+	}
+	err = ind.Execute(c.Writer, "login")
 	if err != nil {
 		return
 	}

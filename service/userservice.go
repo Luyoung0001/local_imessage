@@ -218,6 +218,179 @@ func FindUserByPhoneAndPwd(c *gin.Context) {
 
 }
 
+// FriendsList
+// @Summary 好友列表
+// @Tags 用户模块
+// @param phone formData string false "phone"
+// @Success 200 {string} json{"code","message"}
+// @Router /searchFriends [post]
+func FriendsList(c *gin.Context) {
+	phone := c.PostForm("phone")
+	currentUser := models.FindUserByPhone(phone)
+	data := models.FriendsList(currentUser)
+	c.JSON(200, gin.H{
+		"code":    0, //  0成功   -1失败
+		"message": "获取列表成功!",
+		"data":    data,
+	})
+}
+
+// AddFriend
+// @Summary 添加好友
+// @Tags 用户模块
+// @param userId formData string false "userId"
+// @param targetId formData string false "targetId"
+// @Success 200 {string} json{"code","message"}
+// @Router /contact/addFriend [post]
+func AddFriend(c *gin.Context) {
+	userId := c.PostForm("userId")
+	targetId := c.PostForm("targetId")
+	re := models.AddFriend(userId, targetId)
+	if re == true {
+		c.JSON(200, gin.H{
+			"code":    0, //  0成功   -1失败
+			"message": "添加成功",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"code":    -1, //  0成功   -1失败
+			"message": "添加失败!",
+		})
+	}
+
+}
+
+// CreateGroup
+// @Summary 创建群聊
+// @Tags 用户模块
+// @param ownerId formData string false "ownerId"
+// @param groupName formData string false "groupName"
+// @Success 200 {string} json{"code","message"}
+// @Router /contact/createGroup [post]
+func CreateGroup(c *gin.Context) {
+	var group models.GroupBasic
+
+	group.OwnerUID = c.PostForm("ownerId")
+	group.Name = c.PostForm("groupName")
+
+	re := models.CreatGroup(group)
+	if re == true {
+		c.JSON(200, gin.H{
+			"code":    0, //  0成功   -1失败
+			"message": "创建成功!",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"code":    -1, //  0成功   -1失败
+			"message": "创建失败!",
+		})
+	}
+}
+
+// GroupsList
+// @Summary 加载群聊列表
+// @Tags 用户模块
+// @param userId formData string false "userId"
+// @Success 200 {string} json{"code","message"}
+// @Router /contact/loadGroups [post]
+func GroupsList(c *gin.Context) {
+	uid := c.PostForm("userId")
+	groupList := models.GroupsList(uid)
+	c.JSON(200, gin.H{
+		"code":    0, //  0成功   -1失败
+		"message": "获取成功!",
+		"data":    groupList,
+	})
+
+}
+
+// JoinGroup
+// @Summary 加入群聊
+// @Tags 用户模块
+// @param userId formData string false "userId"
+// @param groupId formData string false "groupId"
+// @Success 200 {string} json{"code","message"}
+// @Router /contact/joinGroup [post]
+func JoinGroup(c *gin.Context) {
+
+}
+
+// RedisMsg
+// @Summary redis收发消息
+// @Tags 用户模块
+// @param userIdA formData string false "userIdA"
+// @param userIdB formData string false "userIdB"
+// @param start formData string false "start"
+// @param end formData string false "end"
+// @param isRev formData string false "isRev"
+// @Success 200 {string} json{"code","message"}
+// @Router /user/find [post]
+func RedisMsg(c *gin.Context) {
+	userIdA, _ := strconv.Atoi(c.PostForm("userIdA"))
+	userIdB, _ := strconv.Atoi(c.PostForm("userIdB"))
+	start, _ := strconv.Atoi(c.PostForm("start"))
+	end, _ := strconv.Atoi(c.PostForm("end"))
+	isRev, _ := strconv.ParseBool(c.PostForm("isRev"))
+	res := models.RedisMsg(int64(userIdA), int64(userIdB), int64(start), int64(end), isRev)
+	utils.RespOKList(c.Writer, "ok", res)
+}
+
+func UnRegister(c *gin.Context) {
+
+}
+func FindPassword(c *gin.Context) {
+
+}
+func DeleteFriend(c *gin.Context) {
+
+}
+func FriendsOnlineList(c *gin.Context) {
+
+}
+func BlockFriend(c *gin.Context) {
+
+}
+func DeleteGroup(c *gin.Context) {
+
+}
+
+// DeMemberFromGroup
+// @Summary 从群聊中删除成员
+// @Tags 用户模块
+// @param operator formData string false "operator"
+// @param groupId formData string false "groupId"
+// @param userId formData string false "userId"
+// @Success 200 {string} json{"code","message"}
+// @Router /contact/deMemberFromGroup [post]
+func DeMemberFromGroup(c *gin.Context) {
+	operator := c.PostForm("operator")
+	groupId := c.PostForm("groupId")
+	userId := c.PostForm("userId")
+	// operator 在 groupId 中删除 userId
+	re := models.LeverUserInGroup(operator, groupId, userId)
+	if re == true {
+		c.JSON(200, gin.H{
+			"code":    0, //  0成功   -1失败
+			"message": "删除成功!",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"code":    0, //  0成功   -1失败
+			"message": "删除失败!",
+		})
+	}
+
+}
+func OwnerManGroup(c *gin.Context) {
+
+}
+func ManManGroup(c *gin.Context) {
+
+}
+func AllowGroup(c *gin.Context) {
+
+}
+
 // 防止跨站域的伪造请求
 
 var upGrade = websocket.Upgrader{
@@ -272,110 +445,5 @@ func MsgHandler(ws *websocket.Conn, c *gin.Context) {
 // @Router /user/sendUserMsg [get]
 func SendUserMsg(c *gin.Context) {
 	models.Chat(c.Writer, c.Request)
-
-}
-
-// FriendList
-// @Summary 好友列表
-// @Tags 用户模块
-// @param username formData string false "phone"
-// @Success 200 {string} json{"code","message"}
-// @Router /searchFriends [post]
-func FriendList(c *gin.Context) {
-
-}
-
-// AddFriend
-// @Summary 添加好友
-// @Tags 用户模块
-// @param userId formData string false "userId"
-// @param targetId formData string false "targetId"
-// @Success 200 {string} json{"code","message"}
-// @Router /contact/addFriend [post]
-func AddFriend(c *gin.Context) {
-
-}
-
-// CreateGroup
-// @Summary 创建群聊
-// @Tags 用户模块
-// @param ownerId formData string false "ownerId"
-// @param name formData string false "name"
-// @param icon formData string false "icon"
-// @param desc formData string false "desc"
-// @Success 200 {string} json{"code","message"}
-// @Router /contact/createGroup [post]
-func CreateGroup(c *gin.Context) {
-
-}
-
-// LoadGroup
-// @Summary 加载群聊列表
-// @Tags 用户模块
-// @param ownerId formData string false "ownerId"
-// @Success 200 {string} json{"code","message"}
-// @Router /contact/loadcommunity [post]
-func LoadGroup(c *gin.Context) {
-}
-
-// JoinGroup
-// @Summary 加入群聊
-// @Tags 用户模块
-// @param userId formData string false "userId"
-// @param comId formData string false "comId"
-// @Success 200 {string} json{"code","message"}
-// @Router /contact/joinGroup [post]
-func JoinGroup(c *gin.Context) {
-
-}
-
-// RedisMsg
-// @Summary redis收发消息
-// @Tags 用户模块
-// @param userIdA formData string false "userIdA"
-// @param userIdB formData string false "userIdB"
-// @param start formData string false "start"
-// @param end formData string false "end"
-// @param isRev formData string false "isRev"
-// @Success 200 {string} json{"code","message"}
-// @Router /user/find [post]
-func RedisMsg(c *gin.Context) {
-	userIdA, _ := strconv.Atoi(c.PostForm("userIdA"))
-	userIdB, _ := strconv.Atoi(c.PostForm("userIdB"))
-	start, _ := strconv.Atoi(c.PostForm("start"))
-	end, _ := strconv.Atoi(c.PostForm("end"))
-	isRev, _ := strconv.ParseBool(c.PostForm("isRev"))
-	res := models.RedisMsg(int64(userIdA), int64(userIdB), int64(start), int64(end), isRev)
-	utils.RespOKList(c.Writer, "ok", res)
-}
-
-func UnRegister(c *gin.Context) {
-
-}
-func FindPassword(c *gin.Context) {
-
-}
-func DeleteFriend(c *gin.Context) {
-
-}
-func FriendsStatus(c *gin.Context) {
-
-}
-func BlockFriend(c *gin.Context) {
-
-}
-func DeleteGroup(c *gin.Context) {
-
-}
-func OutGroup(c *gin.Context) {
-
-}
-func OwnerManGroup(c *gin.Context) {
-
-}
-func ManManGroup(c *gin.Context) {
-
-}
-func AllowGroup(c *gin.Context) {
 
 }

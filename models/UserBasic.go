@@ -11,8 +11,6 @@ import (
 
 // 设计原则:底层干最简单的事情,将控制全部放在上层,上层拥有最高的灵活度和可设计性
 
-var userLists []*UserBasic
-
 type UserBasic struct {
 	// 加密后的字符串
 	UID           string // 由OldPhone 生成,且永远不变,用户唯一表示符
@@ -40,6 +38,7 @@ func (table *UserBasic) TableName() string {
 // 返回所有的用户列表
 
 func GetUserList() []*UserBasic {
+	var userLists []*UserBasic
 	ctx := context.Background()
 	var keys []string
 	// 获取所有键
@@ -95,6 +94,7 @@ func FindUserByUIDAndPwd(UID, password string) UserBasic {
 // 通过用户姓名定位到一群人
 
 func FindUserByName(name string) []*UserBasic {
+	var userLists []*UserBasic
 	userLists = GetUserList()
 	var nameLists []*UserBasic
 	for _, user := range userLists {
@@ -108,6 +108,7 @@ func FindUserByName(name string) []*UserBasic {
 // 通过电话号码定位到一个人
 
 func FindUserByPhone(phone string) UserBasic {
+	var userLists []*UserBasic
 	// 为了保护隐私 只能通过新电话定位到一个人
 	userLists = GetUserList()
 	for _, user := range userLists {
@@ -188,6 +189,7 @@ func UpdateUser(user UserBasic) bool {
 	return true
 }
 func IsUnique(user UserBasic) bool {
+	var userLists []*UserBasic
 	currentPhone := user.NewPhone
 	// 要更新一个值,就要判断要更新的新的电话号码是否已经被别的用户使用
 	// 因此这里只判断电话号码是否被注册过(查看 NewPhone 即可,OldPhone 已被校验)
@@ -206,6 +208,7 @@ func IsUnique(user UserBasic) bool {
 // 按照 UID 进行查询
 
 func FindUserByUID(uid string) UserBasic {
+	var userLists []*UserBasic
 	userLists = GetUserList()
 	for _, user := range userLists {
 		if user.UID == uid {
@@ -213,4 +216,18 @@ func FindUserByUID(uid string) UserBasic {
 		}
 	}
 	return UserBasic{}
+}
+
+// 传入一个 User,返回该用户的好友列表[]*UserBasic
+
+func FriendsList(user UserBasic) []*UserBasic {
+	// 拿到 contacts
+	var friendsList []*UserBasic
+	contactList = FriendList(user.UID)
+	// 获取
+	for _, each := range contactList {
+		friend := FindUserByUID(each.TargetId)
+		friendsList = append(friendsList, &friend)
+	}
+	return friendsList
 }

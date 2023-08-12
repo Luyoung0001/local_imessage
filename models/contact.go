@@ -66,7 +66,7 @@ func FriendList(userId string) []*Contact {
 
 // 添加好友的同时,对方也对添加你
 
-func AddFriend(userId string, targetID string) {
+func AddFriend(userId string, targetID string) bool {
 	ctx := context.Background()
 	// 添加好友的本质就是创建一个contact 记录
 	var contact1 Contact
@@ -85,13 +85,16 @@ func AddFriend(userId string, targetID string) {
 	userJSON2, err1 := json.Marshal(contact2)
 	if err1 != nil {
 		log.Fatal(err1)
+		return false
 	}
 	// 写入 redis 并返回
 	err1 = utils.Red.Set(ctx, userId, userJSON1, 0).Err()
 	err1 = utils.Red.Set(ctx, targetID, userJSON2, 0).Err()
 	if err1 != nil {
 		log.Fatal(err1)
+		return false
 	}
+	return true
 
 }
 
@@ -216,4 +219,18 @@ func SearchUsersByGroupId(groupId string) []*UserBasic {
 		usersList = append(usersList, &currentUser)
 	}
 	return usersList
+}
+
+// 返回用户 userID 加的所有群 []*GroupBasic
+
+func GroupsList(userID string) []*GroupBasic {
+	var groupsList []*GroupBasic
+	// 加的所有的群 contacts
+	userGroupList = GroupList(userID)
+	// 匹配
+	for _, each := range userGroupList {
+		group := FindGroupByGID(each.TargetId)
+		groupsList = append(groupsList, &group)
+	}
+	return groupsList
 }
