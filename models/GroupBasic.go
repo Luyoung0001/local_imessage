@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"local_imessage/utils"
 	"log"
 )
@@ -78,15 +79,44 @@ func CreatGroup(group GroupBasic) bool {
 	return true
 }
 
+// 删除群聊
+
+func DeleteGroup(operator, groupId string) bool {
+	ctx := context.Background()
+	// 鉴定身份
+	currentGroup := FindGroupByGID(groupId)
+
+	if currentGroup.OwnerUID != operator {
+		return false
+	} else {
+		// 要删除的用户键
+		userKey := groupId
+
+		deleted, err := utils.Red.Del(ctx, userKey).Result()
+		if err != nil {
+			log.Println("Error:", err)
+			return false
+		}
+		if deleted > 0 {
+			fmt.Printf("Group with key '%s' deleted.\n", userKey)
+		} else {
+			fmt.Printf("Group with key '%s' not found.\n", userKey)
+			return false
+		}
+	}
+	return true
+}
+
 // 添加管理员
 
-func AddMan(userId, groupId string) {
+func AddMan(userId, groupId string) bool {
 	ctx := context.Background()
 	// 给 group 的字段增加新的对象,之后更新
 	// 查询群
 	groupRaw, err := utils.Red.Get(ctx, groupId).Result()
 	if err != nil {
 		log.Fatal(err)
+		return false
 	}
 	// 反序列化
 	var currentGroup GroupBasic
@@ -97,12 +127,15 @@ func AddMan(userId, groupId string) {
 	currentJSON, err := json.Marshal(currentGroup)
 	if err != nil {
 		log.Fatal(err)
+		return false
 	}
 	// 重新存储
 	err = utils.Red.Set(ctx, currentGroup.GroupID, currentJSON, 0).Err()
 	if err != nil {
 		log.Fatal(err)
+		return false
 	}
+	return true
 }
 
 // 通过群 ID 找 group
@@ -172,4 +205,22 @@ func LeverUserInGroup(operatorId, groupId, userId string) bool {
 		return false
 	}
 
+}
+
+// 判断 userId 和 GroupId 之间的关系
+// 2:群主;1:管理员;0:普通成员;-1:不是群员
+
+func RelationBetweenUserAndGroup(userId, groupId string) int {
+	var relation int
+	currentGroup := FindGroupByGID(groupId)
+	if currentGroup.GroupID == userId {
+		relation = 2
+	} else if stringInSlice(userId, currentGroup.ManagerIDs) {
+		relation = 1
+	} else if ContactRelation(userId, groupId) > 0 {
+		relation = 0
+	} else {
+		relation = -1
+	}
+	return relation
 }

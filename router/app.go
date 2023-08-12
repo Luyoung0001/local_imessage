@@ -37,6 +37,7 @@ func Router() *gin.Engine {
 	// 群
 	r.POST("/contact/createGroup", service.CreateGroup)             // 创建群
 	r.POST("/contact/deGroup", service.DeleteGroup)                 // 解散群
+	r.POST("/contact/addMan", service.AddMan)                       // 添加管理员
 	r.POST("/contact/outGroup", service.OutGroup)                   // 用户退出群聊
 	r.POST("/contact/joinGroup", service.JoinGroup)                 // 添加群聊
 	r.POST("/contact/deMemberFromGroup", service.DeMemberFromGroup) // 删除群中的成员

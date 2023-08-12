@@ -101,7 +101,7 @@ func AddFriend(userId string, targetID string) bool {
 // 删除好友
 // 双向删除,a 删除 b,那么 b 也将自动删除 a
 
-func DeleteFriend(userID, targetID string) {
+func DeleteFriend(userID, targetID string) bool {
 	//删除好友就是删除一个数据
 	//删除的前提是对方已经成为你的好友,这个由上层控制,这里不做校验
 	// 因此,这里要删除两次
@@ -113,10 +113,11 @@ func DeleteFriend(userID, targetID string) {
 			deleted, err := utils.Red.Del(ctx, userID).Result()
 			if err != nil {
 				log.Println("Error:", err)
-				return
+				return false
 			}
 			if deleted < 0 {
 				fmt.Println("删除失败!")
+				return false
 			}
 		}
 		break
@@ -128,20 +129,21 @@ func DeleteFriend(userID, targetID string) {
 			deleted, err := utils.Red.Del(ctx, targetID).Result()
 			if err != nil {
 				log.Println("Error:", err)
-				return
+				return false
 			}
 			if deleted < 0 {
 				fmt.Println("删除失败!")
+				return false
 			}
 		}
 		break
 	}
-
+	return true
 }
 
 // 加群
 
-func JoinGroup(userId string, groupID string) {
+func JoinGroup(userId string, groupID string) bool {
 	// 加群本质就是将 groupID 添加到contact 中
 	// 这里默认只要加群就能成功,群主和管理员可以将该成员删除
 	// 创建一个记录 contact,键为userUID,值为 groupID
@@ -161,13 +163,16 @@ func JoinGroup(userId string, groupID string) {
 	userJSON2, err := json.Marshal(contact2)
 	if err != nil {
 		log.Fatal(err)
+		return false
 	}
 	// 写入 redis 并返回
 	err = utils.Red.Set(ctx, userId, userJSON1, 0).Err()
 	err = utils.Red.Set(ctx, userId, userJSON2, 0).Err()
 	if err != nil {
 		log.Fatal(err)
+		return false
 	}
+	return true
 
 }
 
@@ -195,9 +200,9 @@ func GroupList(userID string) []*Contact {
 
 // 退群
 
-func OutGroup(userId, groupId string) {
+func OutGroup(userId, groupId string) bool {
 	// 双相删除记录
-	DeleteFriend(userId, groupId)
+	return DeleteFriend(userId, groupId)
 }
 
 // 根据 群Id 查找所有群用户并 返回UsersList
@@ -233,4 +238,25 @@ func GroupsList(userID string) []*GroupBasic {
 		groupsList = append(groupsList, &group)
 	}
 	return groupsList
+}
+
+// 判断两个成员是否有关系
+// 1:好友关系;2:群和成员关系;-1:没有关系
+
+func ContactRelation(userId1, userId2 string) int {
+
+	// 获取该用户的所有好友
+	var relation int
+	friendList = FriendList(userId1)
+	for _, each := range contactList {
+		if each.TargetId == userId2 && each.Type == 1 {
+			relation = 1
+		} else if each.TargetId == userId2 && each.Type == 2 {
+			relation = 2
+		} else {
+			// 没有关系
+			relation = -1
+		}
+	}
+	return relation
 }

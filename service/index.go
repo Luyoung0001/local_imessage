@@ -7,6 +7,7 @@ import (
 )
 
 // GetIndex
+// @Summary 获取首页
 // @Tags 首页
 // @Success 200 {string} welcome
 // @Router /index [get]
@@ -22,6 +23,7 @@ func GetIndex(c *gin.Context) {
 }
 
 // ToRegister
+// @Summary 跳转到注册页面
 // @Tags 首页
 // @Success 200 {string} welcome
 // @Router /toRegister [post]
@@ -40,9 +42,28 @@ func ToRegister(c *gin.Context) {
 // Login
 // @Tags 登录
 // @Success 200 {string} welcome
-// @Router /toRegister [get]
+// @Router /login [get]
 func Login(c *gin.Context) {
 	ind, err := template.ParseFiles("/Users/luliang/GoLand/local_imessage/views/user/register.html")
+	if err != nil {
+		panic(err)
+	}
+	err = ind.Execute(c.Writer, "login")
+	if err != nil {
+		return
+	}
+
+}
+
+// UnRegister
+// @Summary 注销账号
+// @Tags 用户模块
+// @param userId formData string false "userId"
+// @param groupId formData string false "groupId"
+// @Success 200 {string} json{"code","message"}
+// @Router /contact/unRegister [post]
+func UnRegister(c *gin.Context) {
+	ind, err := template.ParseFiles("/Users/luliang/GoLand/local_imessage/views/user/unregister.html")
 	if err != nil {
 		panic(err)
 	}
