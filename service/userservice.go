@@ -3,12 +3,10 @@ package service
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"local_imessage/models"
 	"local_imessage/utils"
 	"math/rand"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -401,15 +399,19 @@ func FriendsOnlineList(c *gin.Context) {
 }
 
 // BlockFriend
-// @Summary userId1 拉黑 userId2
+// @Summary 拉黑好友
 // @Tags 用户模块
-// @param userId1 formData string false "userId1"
-// @param userId2 formData string false "userId2"
-// @Success 200 {string} json{"code","message"}
-// @Router /contact/BlockFriend [post]
+// @Accept json
+// @Produce json
+// @Param userId1 formData string false "发起请求的用户ID"
+// @Param userId2 formData string false "待删除的好友ID"
+// @Success 200 {object} json{"code": 0, "message": "删除成功!"}
+// @Failure 200 {object} json{"code": -1, "message": "删除失败!"}
+// @Router /contact/blockFriend [post]
 func BlockFriend(c *gin.Context) {
 	// 拉黑的本质是什么?
-
+	// 定义拉黑为删除
+	DeleteFriend(c)
 }
 
 // DeleteGroup
@@ -547,83 +549,4 @@ func OutGroup(c *gin.Context) {
 		})
 	}
 
-}
-
-// 防止跨站域的伪造请求
-
-var upGrade = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
-}
-
-// SendMsg
-// @Summary 发送消息
-// @Tags 消息模块
-// @Success 200 {string} json{"code","message"}
-// @Router /user/sendMsg [get]
-func SendMsg(c *gin.Context) {
-	// 普通的 HTTP 连接升级为 WebSocket 连接
-	ws, err := upGrade.Upgrade(c.Writer, c.Request, nil)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	defer func(ws *websocket.Conn) {
-		err = ws.Close()
-		if err != nil {
-			fmt.Println(err)
-		}
-	}(ws)
-	MsgHandler(ws, c)
-}
-
-func MsgHandler(ws *websocket.Conn, c *gin.Context) {
-	msg, err := utils.Subscribe(c, utils.PublishKey)
-
-	if err != nil {
-		fmt.Println(err)
-	}
-	// fmt.Println("hello, 发送消息呢:", msg)
-	// 选取时间格式
-	tm := time.Now().Format("2006-01-02 15:15:03")
-	m := fmt.Sprintf("[ws][%s]:%s", tm, msg)
-
-	err = ws.WriteMessage(1, []byte(m))
-	if err != nil {
-		fmt.Println(err)
-	}
-
-}
-
-// SendUserMsg
-// @Summary 发送消息
-// @Tags 用户模块
-// @Success 200 {string} json{"code","message"}
-// @Router /user/sendUserMsg [get]
-func SendUserMsg(c *gin.Context) {
-	models.Chat(c.Writer, c.Request)
-
-}
-
-// RedisMsg
-// @Summary Redis收发消息
-// @Tags 用户模块
-// @Accept json
-// @Produce json
-// @Param userIdA formData string false "用户A的ID"
-// @Param userIdB formData string false "用户B的ID"
-// @Param start formData string false "起始位置"
-// @Param end formData string false "结束位置"
-// @Param isRev formData string false "是否反转排序"
-// @Success 200 {string} json{"code","message"}
-// @Router /user/find [post]
-func RedisMsg(c *gin.Context) {
-	userIdA, _ := strconv.Atoi(c.PostForm("userIdA"))
-	userIdB, _ := strconv.Atoi(c.PostForm("userIdB"))
-	start, _ := strconv.Atoi(c.PostForm("start"))
-	end, _ := strconv.Atoi(c.PostForm("end"))
-	isRev, _ := strconv.ParseBool(c.PostForm("isRev"))
-	res := models.RedisMsg(int64(userIdA), int64(userIdB), int64(start), int64(end), isRev)
-	utils.RespOKList(c.Writer, "ok", res)
 }

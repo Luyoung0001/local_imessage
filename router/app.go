@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"local_imessage/docs"
@@ -16,13 +17,13 @@ func Router() *gin.Engine {
 	// swagger
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	// 静态资源
-	r.Static("/asset", "/Users/luliang/GoLand/local_imessage/asset/")
-	r.LoadHTMLGlob("/Users/luliang/GoLand/local_imessage/views/**/*")
+	r.Static("/asset", viper.GetString("path.static"))
+	r.LoadHTMLGlob(viper.GetString("path.LoadHTMLGlob"))
 
 	// 首页
 	r.GET("/", service.GetIndex)                  //网站主页
 	r.GET("/index", service.GetIndex)             // 网站主页
-	r.POST("/user/login", service.Login)          // 登陆
+	r.POST("/user/login", service.Login)          // 登陆以及登陆后的页面呈现
 	r.POST("/toRegister", service.ToRegister)     // 用户注册
 	r.POST("/friendsList", service.FriendsList)   // 返回好友列表
 	r.POST("/groupsList", service.GroupsList)     // 返回群列表
@@ -43,11 +44,11 @@ func Router() *gin.Engine {
 	r.POST("/contact/deMemberFromGroup", service.DeMemberFromGroup) // 删除群中的成员
 
 	// 用户模块
-	r.POST("/user/createUser", service.CreateUser)   // 增加用户
-	r.POST("/user/getUserList", service.GetUserList) // 获取用户列表
-	r.POST("/user/deleteUser", service.DeleteUser)   // 删除用户
-	r.POST("/user/updateUser", service.UpdateUser)   // 更新用户
-	r.POST("/user/findUserByPhoneAndPwd", service.FindUserByPhoneAndPwd)
+	r.POST("/user/createUser", service.CreateUser)                       // 增加用户
+	r.POST("/user/getUserList", service.GetUserList)                     // 获取用户列表
+	r.POST("/user/deleteUser", service.DeleteUser)                       // 删除用户
+	r.POST("/user/updateUser", service.UpdateUser)                       // 更新用户
+	r.POST("/user/findUserByPhoneAndPwd", service.FindUserByPhoneAndPwd) // 登陆验证
 
 	// 发送消息
 	//聊天功能
@@ -64,11 +65,13 @@ func Router() *gin.Engine {
 	//收到私聊
 	//收到加群申请
 	//...
-	r.GET("/toChat", service.ToChat)        // 聊天页面
-	r.GET("/user/sendMsg", service.SendMsg) // websocket 测试
-	r.GET("/user/sendUserMsg", service.SendUserMsg)
-	r.GET("/chat", service.Chat)
-	r.POST("/user/redisMsg", service.RedisMsg)
+	// 消息模块
+
+	chatGroup := r.Group("/chat")
+	{
+		chatGroup.POST("/", service.Chat)
+
+	}
 
 	return r
 }

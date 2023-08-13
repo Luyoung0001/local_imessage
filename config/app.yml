@@ -17,3 +17,12 @@ timeout:
 
 notice:
   news: "今天没有什么新闻,祝大家心想事成~"
+
+path:
+  index: "/Users/luliang/GoLand/local_imessage/index.html"
+  login: "/Users/luliang/GoLand/local_imessage/views/user/login.html"
+  toRegister: "/Users/luliang/GoLand/local_imessage/views/user/register.html"
+  unRegister: "/Users/luliang/GoLand/local_imessage/views/user/unregister.html"
+  static: "/Users/luliang/GoLand/local_imessage/asset/"
+  LoadHTMLGlob: "/Users/luliang/GoLand/local_imessage/views/**/*"
+

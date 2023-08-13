@@ -16,7 +16,7 @@ type GroupBasic struct {
 }
 
 func (table *GroupBasic) TableName() string {
-	return "groupBasic"
+	return "group_basic"
 }
 
 // 查看所有的群

@@ -260,3 +260,17 @@ func ContactRelation(userId1, userId2 string) int {
 	}
 	return relation
 }
+
+// 判断userId 是群还是普通用户
+// 是群就返回 2
+// 是用户就返回 1
+
+func UserType(userId string) int {
+	var user int
+	if FindGroupByGID(userId).OwnerUID != "" {
+		user = 2
+	} else {
+		user = 1
+	}
+	return user
+}
