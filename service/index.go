@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"html/template"
+	"local_imessage/models"
 )
 
 // GetIndex
@@ -78,10 +79,8 @@ func UnRegister(c *gin.Context) {
 
 // Chat
 // @Tags 用户模块
-// @param userId1 formData string false "userId1"
-// @param userId2 formData string false "userId2"
 // @Success 200 {string} welcome
 // @Router /chat [get]
 func Chat(c *gin.Context) {
-
+	models.Chat(c.Writer, c.Request)
 }

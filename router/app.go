@@ -28,7 +28,7 @@ func Router() *gin.Engine {
 	r.POST("/friendsList", service.FriendsList)   // 返回好友列表
 	r.POST("/groupsList", service.GroupsList)     // 返回群列表
 	r.POST("/findPassword", service.FindPassword) // 利用手机验证码找回密码
-	r.POST("/unRegister", service.UnRegister)     // 注销手机号
+	r.POST("/unRegister", service.UnRegister)     // 注销账号
 	// 好友管理
 	r.POST("/contact/deFriend", service.DeleteFriend)               // 删除好友
 	r.POST("/contact/friendsOnlineList", service.FriendsOnlineList) // 实现在线好友
@@ -70,11 +70,7 @@ func Router() *gin.Engine {
 	//...
 	// 消息模块
 
-	chatGroup := r.Group("/chat")
-	{
-		chatGroup.POST("/", service.Chat)
-
-	}
+	r.POST("chat", service.Chat) // 聊天
 
 	return r
 }
