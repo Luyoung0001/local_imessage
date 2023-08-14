@@ -9,20 +9,22 @@ import (
 )
 
 type GroupBasic struct {
-	Name       string   // 群名
-	GroupID    string   // 群ID,由群主的 ID 生成
-	OwnerUID   string   // 群主
-	ManagerIDs []string // 管理员们
+	Name        string   // 群名
+	GroupID     string   // 群ID,由群主的 ID 生成
+	OwnerUID    string   // 群主
+	ManagerIDs  []string // 管理员们
+	Description string   // 描述
+	DataType    string   `json:"dataType"` // 添加 DataType 字段来标识数据类型
 }
 
 func (table *GroupBasic) TableName() string {
-	return "group_basic"
+	return "groupBasic"
 }
 
 // 查看所有的群
 
-func GetGroupList() []*GroupBasic {
-	var groupList []*GroupBasic
+func GetGroupList() []GroupBasic {
+	groupList := make([]GroupBasic, 0)
 	ctx := context.Background()
 	var keys []string
 	// 获取所有键
@@ -44,26 +46,19 @@ func GetGroupList() []*GroupBasic {
 			return nil
 		}
 		// 添加到 values
-		groupList = append(groupList, &groupInfo)
+		groupList = append(groupList, groupInfo)
 	}
 	return groupList
 }
 
 // 创建群
+// 需要注意的是,创建群也会产生一个 contact 类型的记录
 
 func CreatGroup(group GroupBasic) bool {
-	// group 字段有:
-	// Name
-	// ownerId
-
-	// Id 需要生成
 	ctx := context.Background()
-	// userId 创建了一个群聊,然后将整个群视为 UserBasic 处理
-	// 将群序列化后存储
-	// 获取 key
-	groupId := utils.MD5Encode(group.OwnerUID)
+	group.GroupID = IdGenerator()
+	group.DataType = "groupBasic"
 
-	group.GroupID = groupId
 	// 序列化
 	groupJSON, err := json.Marshal(group)
 	if err != nil {
@@ -71,12 +66,14 @@ func CreatGroup(group GroupBasic) bool {
 		return false
 	}
 	// 存储
-	err = utils.Red.Set(ctx, groupId, groupJSON, 0).Err()
+	err = utils.Red.Set(ctx, group.GroupID, groupJSON, 0).Err()
 	if err != nil {
 		log.Fatal(err)
 		return false
 	}
-	return true
+	// 加入群
+	return JoinGroup(group.OwnerUID, group.GroupID)
+
 }
 
 // 删除群聊
@@ -141,19 +138,23 @@ func AddMan(userId, groupId string) bool {
 // 通过群 ID 找 group
 
 func FindGroupByGID(gid string) GroupBasic {
-	var groupList []*GroupBasic
-	groupList = GetGroupList()
-	for _, each := range groupList {
-		if each.GroupID == gid {
-			return *each
-		}
+	ctx := context.Background()
+	var group GroupBasic
+	groupJSON, err := utils.Red.Get(ctx, gid).Result()
+	if err != nil {
+		log.Println(err)
+		return GroupBasic{}
 	}
-	return GroupBasic{}
+	err = json.Unmarshal([]byte(groupJSON), &group)
+	if err != nil {
+		return GroupBasic{}
+	}
+	return group
 }
 
 // 鉴定权限
 
-func LeverUserInGroup(operatorId, groupId, userId string) bool {
+func LevelUserInGroup(operatorId, groupId, userId string) bool {
 	ctx := context.Background()
 	group := FindGroupByGID(groupId)
 	// 谁能删除谁?

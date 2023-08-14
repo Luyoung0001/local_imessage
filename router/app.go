@@ -34,18 +34,21 @@ func Router() *gin.Engine {
 	r.POST("/contact/friendsOnlineList", service.FriendsOnlineList) // 实现在线好友
 	r.POST("/contact/blockFriend", service.BlockFriend)             // 实现屏蔽好友消息
 	r.POST("/contact/addFriend", service.AddFriend)                 // 添加好友页面
+	r.GET("/contact/getContactList", service.GetContactList)        // 获取所有关系列表
 
 	// 群
-	r.POST("/contact/createGroup", service.CreateGroup)             // 创建群
-	r.POST("/contact/deGroup", service.DeleteGroup)                 // 解散群
-	r.POST("/contact/addMan", service.AddMan)                       // 添加管理员
-	r.POST("/contact/outGroup", service.OutGroup)                   // 用户退出群聊
-	r.POST("/contact/joinGroup", service.JoinGroup)                 // 添加群聊
-	r.POST("/contact/deMemberFromGroup", service.DeMemberFromGroup) // 删除群中的成员
+	r.POST("/contact/createGroup", service.CreateGroup)                   // 创建群
+	r.POST("/contact/deGroup", service.DeleteGroup)                       // 解散群
+	r.POST("/contact/addMan", service.AddMan)                             // 添加管理员
+	r.POST("/contact/outGroup", service.OutGroup)                         // 用户退出群聊
+	r.POST("/contact/joinGroup", service.JoinGroup)                       // 添加群聊
+	r.POST("/contact/deMemberFromGroup", service.DeMemberFromGroup)       // 删除群中的成员
+	r.GET("/contact/getGroupList", service.GetGroupList)                  // 获取所有群列表
+	r.POST("/contact/searchUsersByGroupId", service.SearchUsersByGroupId) // 按照groupId 找到所有成员
 
 	// 用户模块
 	r.POST("/user/createUser", service.CreateUser)                       // 增加用户
-	r.POST("/user/getUserList", service.GetUserList)                     // 获取用户列表
+	r.GET("/user/getUserList", service.GetUserList)                      // 获取用户列表
 	r.POST("/user/deleteUser", service.DeleteUser)                       // 删除用户
 	r.POST("/user/updateUser", service.UpdateUser)                       // 更新用户
 	r.POST("/user/findUserByPhoneAndPwd", service.FindUserByPhoneAndPwd) // 登陆验证

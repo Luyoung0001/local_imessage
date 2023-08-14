@@ -21,6 +21,20 @@ const docTemplate = `{
                 "tags": [
                     "用户模块"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userId1",
+                        "name": "userId1",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "userId2",
+                        "name": "userId2",
+                        "in": "formData"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -40,14 +54,50 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "userId",
+                        "description": "发起请求的用户ID",
                         "name": "userId",
                         "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "targetName",
-                        "name": "targetName",
+                        "description": "目标用户ID",
+                        "name": "targetId",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\": -1, \"message\": \"添加失败\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/contact/addMan": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "群主添加userId为群管理员",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "操作者的ID",
+                        "name": "operator",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "群组ID",
+                        "name": "groupId",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "待添加管理员的ID",
+                        "name": "userId",
                         "in": "formData"
                     }
                 ],
@@ -61,7 +111,37 @@ const docTemplate = `{
                 }
             }
         },
-        "/contact/createCommunity": {
+        "/contact/blockFriend": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "拉黑好友",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "发起请求的用户ID",
+                        "name": "userId1",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "待删除的好友ID",
+                        "name": "userId2",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\": -1, \"message\": \"删除失败!\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/contact/createGroup": {
             "post": {
                 "tags": [
                     "用户模块"
@@ -70,32 +150,198 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ownerId",
+                        "description": "群主用户ID",
                         "name": "ownerId",
                         "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "name",
-                        "name": "name",
+                        "description": "群组名称",
+                        "name": "groupName",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\": -1, \"message\": \"创建失败!\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/contact/deMemberFromGroup": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "从群聊中删除成员",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "操作者的ID",
+                        "name": "operator",
                         "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "icon",
-                        "name": "icon",
+                        "description": "群组ID",
+                        "name": "groupId",
                         "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "desc",
-                        "name": "desc",
+                        "description": "待删除成员的ID",
+                        "name": "userId",
                         "in": "formData"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "code\",\"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/contact/deleteFriend": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "删除好友",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "发起请求的用户ID",
+                        "name": "userId1",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "待删除的好友ID",
+                        "name": "userId2",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\": -1, \"message\": \"删除失败!\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/contact/deleteGroup": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "群主解散群",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "操作者的ID",
+                        "name": "operator",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "群组ID",
+                        "name": "groupId",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/contact/friendsOnlineList": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "好友在线列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userId",
+                        "name": "userId",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\",\"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/contact/getContactList": {
+            "get": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "获取所有关系",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/contact/getGroupList": {
+            "get": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "获取群的列表",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/contact/groupsList": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "加载群聊列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户ID",
+                        "name": "userId",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\": -1, \"message\": \"获取失败\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -112,14 +358,44 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "userId",
+                        "description": "用户ID",
                         "name": "userId",
                         "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "comId",
-                        "name": "comId",
+                        "description": "群组ID",
+                        "name": "groupId",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\": -1, \"message\": \"加入失败!\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/contact/outGroup": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "退群",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户ID",
+                        "name": "userId",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "群组ID",
+                        "name": "groupId",
                         "in": "formData"
                     }
                 ],
@@ -133,23 +409,77 @@ const docTemplate = `{
                 }
             }
         },
-        "/contact/loadcommunity": {
+        "/contact/searchUsersByGroupId": {
             "post": {
                 "tags": [
                     "用户模块"
                 ],
-                "summary": "加载好友列表",
+                "summary": "按照groupId 找到所有的群成员",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ownerId",
-                        "name": "ownerId",
+                        "description": "群组ID",
+                        "name": "groupId",
                         "in": "formData"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "code\",\"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/contact/unRegister": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "注销账号",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userId",
+                        "name": "userId",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "password",
+                        "name": "password",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\",\"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/friendsList": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "好友列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户ID",
+                        "name": "userId",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\": -1, \"message\": \"获取列表失败\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -162,6 +492,7 @@ const docTemplate = `{
                 "tags": [
                     "首页"
                 ],
+                "summary": "获取首页",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -172,48 +503,10 @@ const docTemplate = `{
                 }
             }
         },
-        "/searchFriends": {
-            "post": {
-                "tags": [
-                    "用户模块"
-                ],
-                "summary": "搜索好友",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "userId",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "code\",\"message\"}",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/toChat": {
+        "/login": {
             "get": {
                 "tags": [
-                    "用户模块"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "userid",
-                        "name": "UserId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "token",
-                        "name": "token",
-                        "in": "query"
-                    }
+                    "登录"
                 ],
                 "responses": {
                     "200": {
@@ -226,10 +519,11 @@ const docTemplate = `{
             }
         },
         "/toRegister": {
-            "get": {
+            "post": {
                 "tags": [
                     "首页"
                 ],
+                "summary": "跳转到注册页面",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -249,38 +543,32 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "name",
+                        "description": "用户名",
                         "name": "name",
                         "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "password",
+                        "description": "密码",
                         "name": "password",
                         "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "Identity",
+                        "description": "确认密码",
                         "name": "Identity",
                         "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "phone",
+                        "description": "电话号码",
                         "name": "phone",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "email",
-                        "name": "email",
                         "in": "formData"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "code\",\"message\"}",
+                        "description": "code\": -1, \"message\": \"新增用户失败!\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -297,14 +585,14 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "id",
-                        "name": "id",
+                        "description": "用户ID",
+                        "name": "userId",
                         "in": "formData"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "code\",\"message\"}",
+                        "description": "code\": -1, \"message\": \"删除用户失败!\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -312,55 +600,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/find": {
-            "post": {
-                "tags": [
-                    "用户模块"
-                ],
-                "summary": "redis收发消息",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "userIdA",
-                        "name": "userIdA",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "userIdB",
-                        "name": "userIdB",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "start",
-                        "name": "start",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "end",
-                        "name": "end",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "isRev",
-                        "name": "isRev",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "code\",\"message\"}",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/findUserByNameAndPwd": {
+        "/user/findUserByPhoneAndPwd": {
             "post": {
                 "tags": [
                     "用户模块"
@@ -369,20 +609,20 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "name",
-                        "name": "name",
+                        "description": "手机号码",
+                        "name": "phone",
                         "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "password",
+                        "description": "密码",
                         "name": "password",
                         "in": "formData"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "code\",\"message\"}",
+                        "description": "code\": -1, \"message\": \"登录失败\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -391,46 +631,14 @@ const docTemplate = `{
             }
         },
         "/user/getUserList": {
-            "post": {
-                "tags": [
-                    "用户模块"
-                ],
-                "summary": "所有用户",
-                "responses": {
-                    "200": {
-                        "description": "code\",\"message\"}",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/sendMsg": {
-            "get": {
-                "tags": [
-                    "消息模块"
-                ],
-                "summary": "发送消息",
-                "responses": {
-                    "200": {
-                        "description": "code\",\"message\"}",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/sendUserMsg": {
             "get": {
                 "tags": [
                     "用户模块"
                 ],
-                "summary": "发送消息",
+                "summary": "获取所有用户",
                 "responses": {
                     "200": {
-                        "description": "code\",\"message\"}",
+                        "description": "OK",
                         "schema": {
                             "type": "string"
                         }
@@ -443,42 +651,30 @@ const docTemplate = `{
                 "tags": [
                     "用户模块"
                 ],
-                "summary": "修改用户",
+                "summary": "修改昵称和密码",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "id",
-                        "name": "id",
+                        "description": "用户ID",
+                        "name": "userId",
                         "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "name",
+                        "description": "用户名",
                         "name": "name",
                         "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "password",
+                        "description": "密码",
                         "name": "password",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "phone",
-                        "name": "phone",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "email",
-                        "name": "email",
                         "in": "formData"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "code\",\"message\"}",
+                        "description": "code\": -1, \"message\": \"修改用户失败!\"}",
                         "schema": {
                             "type": "string"
                         }

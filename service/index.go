@@ -61,7 +61,7 @@ func Login(c *gin.Context) {
 // @Summary 注销账号
 // @Tags 用户模块
 // @param userId formData string false "userId"
-// @param groupId formData string false "groupId"
+// @param password formData string false "password"
 // @Success 200 {string} json{"code","message"}
 // @Router /contact/unRegister [post]
 func UnRegister(c *gin.Context) {

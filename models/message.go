@@ -1,7 +1,7 @@
 package models
 
 type Message struct {
-	MessageId  string // 由UserId和 TargetId 生成
+	MessageId  string // 由 userId 生成,3 次
 	UserId     string // 发送者
 	TargetId   string // 接收者
 	Type       int    // 发送类型: 群聊,私聊,广播等
@@ -13,4 +13,5 @@ type Message struct {
 	Url        string // 链接
 	Desc       string // 描述
 	Amount     int    // 其它统计
+	DataType   string `json:"dataType"` // 添加 DataType 字段来标识数据类型
 }
