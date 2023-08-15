@@ -3,17 +3,18 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>欢迎使用ChatRoom</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>欢迎使用 ChatRoom</title>
     <style>
         body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f4f4f4;
         }
 
         .container {
@@ -44,7 +45,7 @@
         input[type="text"],
         input[type="password"] {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             border: 1px solid #ccc;
             border-radius: 3px;
         }
@@ -71,25 +72,30 @@
         a:hover {
             text-decoration: underline;
         }
+
+        .notification {
+            color: #ff5733;
+            font-weight: bold;
+            margin-top: 10px;
+        }
     </style>
 </head>
 
 <body>
 <div class="container">
-    <h2>欢迎使用ChatRoom</h2>
-    <form>
+    <h2>欢迎使用 ChatRoom</h2>
+    <form action="/user/login" method="post">
         <div class="input-group">
-            <label for="username">用户名:</label>
-            <input type="text" id="username" placeholder="请输入用户名" name="username">
+            <label for="phone">电话号码:</label>
+            <input id="phone" name="phone" placeholder="请输入电话号码" type="text">
         </div>
         <div class="input-group">
             <label for="password">密码:</label>
-            <input type="password" id="password" placeholder="请输入密码" name="password">
+            <input id="password" name="password" placeholder="请输入密码" type="password">
         </div>
         <input type="submit" value="登录">
         <p><a href="/toRegister">注册账号</a> | <a href="/findPassword">忘记密码</a></p>
-        <p>通知:</p>
-        <p>{{.}}</p>
+        <p class="notification">{{.}}</p>
     </form>
 </div>
 </body>

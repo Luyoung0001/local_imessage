@@ -3,16 +3,17 @@ package models
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"local_imessage/utils"
 	"log"
 )
 
 type Contact struct {
-	ContactID string // 哈哈哈哈哈哈哈哈笑会儿
+	ContactID string //
 	OwnerId   string // userId
 	TargetId  string // 有人的 ID,有群的 ID
 	Type      int    // 1 代表好友关系;2 代表群聊关系
-	Desc      string // 描述? 预留字段
+	Desc      string // 描述,预留字段
 	DataType  string `json:"dataType"` // 添加 DataType 字段来标识数据类型
 }
 
@@ -124,16 +125,26 @@ func OutGroup(userId, groupId string) bool {
 
 // 返回用户 userID 加的所有群,包括自己创建的群
 
-func GroupList(userID string) []Contact {
-	var userGroupList []Contact
-	// 就是查找type=2
-	contactList := FriendList(userID)
-	for _, item := range contactList {
-		if item.Type == 2 {
-			userGroupList = append(userGroupList, item)
+func GroupList(userId string) []Contact {
+	contactList := GetContactList()
+	groupList := make([]Contact, 0) // 创建一个空的group列表
+
+	for _, contact := range contactList {
+		if contact.OwnerId == userId && contact.Type == 2 {
+			// 创建一个新的 Contact 对象，并将属性拷贝过来
+			newContact := Contact{
+				ContactID: contact.ContactID,
+				OwnerId:   contact.OwnerId,
+				TargetId:  contact.TargetId,
+				Type:      contact.Type,
+				Desc:      "",
+				DataType:  "contact",
+			}
+			groupList = append(groupList, newContact)
 		}
 	}
-	return userGroupList
+
+	return groupList
 }
 
 // 根据 群Id 查找所有群用户并 返回UsersList
@@ -143,11 +154,14 @@ func SearchUsersByGroupId(groupId string) []UserBasic {
 
 	usersList := make([]UserBasic, 0)
 	targets := make([]string, 0)
-	groupContact := FriendList(groupId)
+	groupContact := GroupList(groupId)
+	fmt.Println(groupContact)
+
 	// 拿到所有的 []targetId
 	for _, each := range groupContact {
 		targets = append(targets, each.TargetId)
 	}
+	fmt.Println(targets)
 	// 遍历所有的 targetId,找到 UserBasic
 	for _, each := range targets {
 		userBasic := FindUserByUID(each)
@@ -262,4 +276,18 @@ func DeleteKvFromRed(contactId string) bool {
 	return true
 }
 
-// 已知
+// 判断一个用户是否在线
+
+func IsOnline(userId string) bool {
+	ctx := context.Background()
+	// 从Redis 中获取在线信息
+	re, err := utils.Red.Get(ctx, "online_"+userId).Result()
+	if err != nil {
+		fmt.Println(err)
+	}
+	// 如果不等于空,说明在线
+	if re != "" {
+		return true
+	}
+	return false
+}

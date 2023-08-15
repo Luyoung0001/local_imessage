@@ -35,18 +35,20 @@ func GetGroupList() []GroupBasic {
 	// 遍历每个键，获取值
 	for _, key := range keys {
 		value, err := utils.Red.Get(ctx, key).Result()
-		var groupInfo GroupBasic
 		if err != nil {
 			log.Println("Error:", err)
 			continue
 		}
-		// 反序列化
-		err = json.Unmarshal([]byte(value), &groupInfo)
-		if err != nil {
-			return nil
+		if StructType(value) == "groupBasic" {
+			var groupInfo GroupBasic
+			// 反序列化
+			err = json.Unmarshal([]byte(value), &groupInfo)
+			if err != nil {
+				return nil
+			}
+			// 添加到 values
+			groupList = append(groupList, groupInfo)
 		}
-		// 添加到 values
-		groupList = append(groupList, groupInfo)
 	}
 	return groupList
 }

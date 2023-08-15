@@ -1,41 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>注册你的账号!</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>注册页面</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             background-color: #f4f4f4;
         }
-        .container {
+
+        .registration-form {
             width: 300px;
+            margin: auto;
+            margin-top: 100px;
             padding: 20px;
             background-color: #fff;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             border-radius: 5px;
-            text-align: center;
         }
-        .container h2 {
+
+        .registration-form h2 {
             margin-bottom: 20px;
             color: #333;
         }
-        .input-group {
+
+        .form-group {
             margin-bottom: 15px;
         }
+
         label {
             display: block;
             margin-bottom: 5px;
             color: #555;
             font-weight: bold;
         }
+
         input[type="text"],
         input[type="password"] {
             width: 100%;
@@ -43,8 +46,8 @@
             border: 1px solid #ccc;
             border-radius: 3px;
         }
-        input[type="button"],
-        input[type="submit"] {
+
+        button[type="submit"] {
             background-color: #007bff;
             color: #fff;
             border: none;
@@ -53,35 +56,84 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
-        input[type="button"]:hover,
-        input[type="submit"]:hover {
+
+        button[type="submit"]:hover {
             background-color: #0056b3;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        #message {
+            color: red;
         }
     </style>
 </head>
+
 <body>
-<div class="container">
-    <h2>注册你的账号!</h2>
-    <form>
-        <div class="input-group">
-            <label for="phone">请输入你的电话号码:</label>
-            <input type="text" id="phone" name="phone" placeholder="13888888888">
+<div class="registration-form">
+    <h2>注册页面</h2>
+    <form id="registrationForm">
+        <div class="form-group">
+            <label for="username">用户名:</label>
+            <input id="username" name="username" required type="text">
         </div>
-        <div class="input-group">
-            <label for="username">请输入你的用户名:</label>
-            <input type="text" id="username" name="username" placeholder="用户名">
+        <div class="form-group">
+            <label for="phone">电话号码:</label>
+            <input id="phone" name="phone" required type="text">
         </div>
-        <div class="input-group">
-            <label for="password">请输入你的密码:</label>
-            <input type="password" id="password" name="password" placeholder="密码">
+        <div class="form-group">
+            <label for="password">密码:</label>
+            <input id="password" name="password" required type="password">
         </div>
-        <div class="input-group">
-            <label for="verification">请输入你的验证码:</label>
-            <input type="text" id="verification" name="certicode" placeholder="验证码5分钟有效">
-            <input type="button" value="发送验证码">
+        <div class="form-group">
+            <label for="Identity">确认密码:</label>
+            <input id="Identity" name="Identity" required type="password">
         </div>
-        <input type="submit" value="注册">
+        <button type="submit">注册</button>
     </form>
+    <p id="message"></p>
+    <a href="/index">返回登录</a>
 </div>
+
+<script>
+    const registrationForm = document.getElementById('registrationForm');
+    const messageElement = document.getElementById('message');
+
+    registrationForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(registrationForm);
+
+        try {
+            const response = await fetch('/user/createUser', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            if (data.code === 0) {
+                messageElement.textContent = '注册成功！';
+                messageElement.style.color = 'green';
+            } else {
+                messageElement.textContent = '注册失败，请重试！';
+                messageElement.style.color = 'red';
+            }
+        } catch (error) {
+            console.error(error);
+            messageElement.textContent = '发生错误，请重试！';
+            messageElement.style.color = 'red';
+        }
+    });
+</script>
 </body>
+
 </html>

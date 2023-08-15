@@ -2,12 +2,107 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>注销页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #result-message {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-<div>
-    注销
+<div class="container">
+    <h1>用户注销页面</h1>
+    <form action="/user/deleteUser" class="form-group" method="post">
+        <label for="userId">用户ID:</label>
+        <input id="userId" name="userId" required type="text">
+        <br>
+        <label for="password">密码:</label>
+        <input id="password" name="password" required type="password">
+        <br>
+        <button type="submit">注销</button>
+    </form>
+    <div id="result-message"></div>
 </div>
 
+<script>
+    const form = document.querySelector("form");
+    const resultMessage = document.getElementById("result-message");
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const userId = document.getElementById("userId").value;
+        const password = document.getElementById("password").value;
+
+        try {
+            const response = await fetch("/user/deleteUser", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: `userId=${userId}&password=${password}`,
+            });
+
+            const data = await response.json();
+            if (data.code === 0) {
+                resultMessage.textContent = "删除用户成功!";
+            } else {
+                resultMessage.textContent = "删除用户失败!";
+            }
+        } catch (error) {
+            console.error(error);
+            resultMessage.textContent = "发生错误，请重试!";
+        }
+    });
+</script>
 </body>
 </html>

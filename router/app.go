@@ -21,14 +21,14 @@ func Router() *gin.Engine {
 	r.LoadHTMLGlob(viper.GetString("path.LoadHTMLGlob"))
 
 	// 首页
-	r.GET("/", service.GetIndex)                  //网站主页
-	r.GET("/index", service.GetIndex)             // 网站主页
-	r.POST("/user/login", service.Login)          // 登陆以及登陆后的页面呈现
-	r.POST("/toRegister", service.ToRegister)     // 用户注册
-	r.POST("/friendsList", service.FriendsList)   // 返回好友列表
-	r.POST("/groupsList", service.GroupsList)     // 返回群列表
-	r.POST("/findPassword", service.FindPassword) // 利用手机验证码找回密码
-	r.POST("/unRegister", service.UnRegister)     // 注销账号
+	r.GET("/", service.GetIndex)                 //网站主页
+	r.GET("/index", service.GetIndex)            // 网站主页
+	r.POST("/user/login", service.Login)         // 登陆以及登陆后的页面呈现
+	r.GET("/toRegister", service.ToRegister)     // 用户注册
+	r.POST("/friendsList", service.FriendsList)  // 返回好友列表
+	r.POST("/groupsList", service.GroupsList)    // 返回群列表
+	r.GET("/findPassword", service.FindPassword) // 利用手机验证码找回密码
+	r.POST("/unRegister", service.UnRegister)    // 注销账号
 	// 好友管理
 	r.POST("/contact/deFriend", service.DeleteFriend)               // 删除好友
 	r.POST("/contact/friendsOnlineList", service.FriendsOnlineList) // 实现在线好友
@@ -47,11 +47,10 @@ func Router() *gin.Engine {
 	r.POST("/contact/searchUsersByGroupId", service.SearchUsersByGroupId) // 按照groupId 找到所有成员
 
 	// 用户模块
-	r.POST("/user/createUser", service.CreateUser)                       // 增加用户
-	r.GET("/user/getUserList", service.GetUserList)                      // 获取用户列表
-	r.POST("/user/deleteUser", service.DeleteUser)                       // 删除用户
-	r.POST("/user/updateUser", service.UpdateUser)                       // 更新用户
-	r.POST("/user/findUserByPhoneAndPwd", service.FindUserByPhoneAndPwd) // 登陆验证
+	r.POST("/user/createUser", service.CreateUser)  // 增加用户
+	r.GET("/user/getUserList", service.GetUserList) // 获取用户列表
+	r.POST("/user/deleteUser", service.DeleteUser)  // 删除用户
+	r.POST("/user/updateUser", service.UpdateUser)  // 更新用户
 
 	// 发送消息
 	//聊天功能
@@ -70,7 +69,8 @@ func Router() *gin.Engine {
 	//...
 	// 消息模块
 
-	r.POST("chat", service.Chat) // 聊天
+	r.POST("/chat", service.Chat)                   // 聊天
+	r.POST("/listInOnePage", service.ListInOnePage) // 呈现页面
 
 	return r
 }

@@ -21,20 +21,6 @@ const docTemplate = `{
                 "tags": [
                     "用户模块"
                 ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "userId1",
-                        "name": "userId1",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "userId2",
-                        "name": "userId2",
-                        "in": "formData"
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -325,30 +311,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/contact/groupsList": {
-            "post": {
-                "tags": [
-                    "用户模块"
-                ],
-                "summary": "加载群聊列表",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "用户ID",
-                        "name": "userId",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "code\": -1, \"message\": \"获取失败\"}",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/contact/joinGroup": {
             "post": {
                 "tags": [
@@ -487,6 +449,30 @@ const docTemplate = `{
                 }
             }
         },
+        "/groupsList": {
+            "post": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "加载群聊列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户ID",
+                        "name": "userId",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\": -1, \"message\": \"获取失败\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/index": {
             "get": {
                 "tags": [
@@ -503,14 +489,23 @@ const docTemplate = `{
                 }
             }
         },
-        "/login": {
-            "get": {
+        "/listInOnePage": {
+            "post": {
                 "tags": [
-                    "登录"
+                    "界面模块"
+                ],
+                "summary": "给前端呈现列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户ID",
+                        "name": "userId",
+                        "in": "formData"
+                    }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "owner\": {...}, \"contactList\": [...], \"onLineList\": [...], \"groupList\": [...]}",
                         "schema": {
                             "type": "string"
                         }
@@ -544,7 +539,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "用户名",
-                        "name": "name",
+                        "name": "username",
                         "in": "formData"
                     },
                     {
@@ -600,7 +595,23 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/findUserByPhoneAndPwd": {
+        "/user/getUserList": {
+            "get": {
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "获取所有用户",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/login": {
             "post": {
                 "tags": [
                     "用户模块"
@@ -623,22 +634,6 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "code\": -1, \"message\": \"登录失败\"}",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/getUserList": {
-            "get": {
-                "tags": [
-                    "用户模块"
-                ],
-                "summary": "获取所有用户",
-                "responses": {
-                    "200": {
-                        "description": "OK",
                         "schema": {
                             "type": "string"
                         }

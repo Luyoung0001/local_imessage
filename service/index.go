@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/viper"
 	"html/template"
 	"local_imessage/models"
+	"local_imessage/utils"
 )
 
 // GetIndex
@@ -41,21 +42,44 @@ func ToRegister(c *gin.Context) {
 }
 
 // Login
-// @Tags 登录
-// @Success 200 {string} welcome
-// @Router /login [get]
+// @Summary 用户登录
+// @Tags 用户模块
+// @Param phone formData string false "手机号码"
+// @Param password formData string false "密码"
+// @Success 200 {string} json{"code": 0, "message": "登录成功", "data": UserBasic}
+// @Failure 200 {string} json{"code": -1, "message": "登录失败"}
+// @Router /user/login [post]
 func Login(c *gin.Context) {
-	// 这个页面将会非常复杂,这个页面是用户登陆成功后的跳转页面,里面集成了聊天,群聊,好友列表,在线列表,个人信息设置,群管理等等
-	// 建议在这个页面下建立一个路由表
-	ind, err := template.ParseFiles(viper.GetString("path.login"))
-	if err != nil {
-		panic(err)
-	}
-	err = ind.Execute(c.Writer, "login")
-	if err != nil {
-		return
-	}
+	// 拿到前端传来的用户名和密码
+	phone := c.Request.FormValue("phone")
+	password := c.Request.FormValue("password")
+	// 查询改用户是否存在
+	user := models.FindUserByPhone(phone)
+	// 如果不存在
+	if user.Phone == "" {
+		c.JSON(200, gin.H{
+			"code":    -1, //  0成功   -1失败
+			"message": "该用户不存在",
+		})
+	} else {
+		flag := utils.ValidPassword(password, user.Salt, user.PassWord)
+		if !flag {
+			c.JSON(200, gin.H{
+				"code":    -1, //  0成功   -1失败
+				"message": "密码不正确",
+			})
+		} else {
+			ind, _ := template.ParseFiles(viper.GetString("path.login"))
+			// 传递 userId 到模板
+			// 渲染模板并传递参数
+			_ = ind.ExecuteTemplate(c.Writer, viper.GetString("path.login"), user.UID)
 
+			// 传入uid
+			_ = ind.Execute(c.Writer, user.UID)
+
+		}
+
+	}
 }
 
 // UnRegister
@@ -74,7 +98,6 @@ func UnRegister(c *gin.Context) {
 	if err != nil {
 		return
 	}
-
 }
 
 // Chat

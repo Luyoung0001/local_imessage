@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"local_imessage/models"
 	"local_imessage/utils"
+	"log"
 	"math/rand"
 	"net/http"
 	"time"
@@ -34,7 +35,7 @@ func GetUserList(c *gin.Context) {
 // CreateUser
 // @Summary 新增用户
 // @Tags 用户模块
-// @param name formData string false "用户名"
+// @param username formData string false "用户名"
 // @Param password formData string false "密码"
 // @Param Identity formData string false "确认密码"
 // @Param phone formData string false "电话号码"
@@ -44,8 +45,9 @@ func GetUserList(c *gin.Context) {
 func CreateUser(c *gin.Context) {
 	user := models.UserBasic{}
 	// 先判断是否有冲突
-	user.Name = c.Request.FormValue("name")
+	user.Name = c.Request.FormValue("username")
 	user.Phone = c.Request.FormValue("phone")
+	fmt.Println(user.Name, user.Phone)
 
 	if !models.IsUnique(user) {
 		c.JSON(200, gin.H{
@@ -97,9 +99,7 @@ func CreateUser(c *gin.Context) {
 				"message": "新增用户失败!",
 			})
 		}
-
 	}
-
 }
 
 // DeleteUser
@@ -168,45 +168,6 @@ func UpdateUser(c *gin.Context) {
 			"message": "修改用户失败!",
 		})
 	}
-}
-
-// FindUserByPhoneAndPwd
-// @Summary 用户登录
-// @Tags 用户模块
-// @Param phone formData string false "手机号码"
-// @Param password formData string false "密码"
-// @Success 200 {string} json{"code": 0, "message": "登录成功", "data": UserBasic}
-// @Failure 200 {string} json{"code": -1, "message": "登录失败"}
-// @Router /user/findUserByPhoneAndPwd [post]
-func FindUserByPhoneAndPwd(c *gin.Context) {
-	// 拿到前端传来的用户名和密码
-	phone := c.Request.FormValue("phone")
-	password := c.Request.FormValue("password")
-	fmt.Println(phone, password)
-	// 查询改用户是否存在
-	user := models.FindUserByPhone(phone)
-	// 如果不存在
-	if user.Phone == "" {
-		c.JSON(200, gin.H{
-			"code":    -1, //  0成功   -1失败
-			"message": "该用户不存在",
-		})
-	} else {
-		flag := utils.ValidPassword(password, user.Salt, user.PassWord)
-		if !flag {
-			c.JSON(200, gin.H{
-				"code":    -1, //  0成功   -1失败
-				"message": "密码不正确",
-			})
-		} else {
-			c.JSON(200, gin.H{
-				"code":    0, //  0成功   -1失败
-				"message": "登录成功",
-			})
-		}
-
-	}
-
 }
 
 // FriendsList
@@ -293,7 +254,7 @@ func CreateGroup(c *gin.Context) {
 // @Param userId formData string false "用户ID"
 // @Success 200 {string} json{"code": 0, "message": "获取成功!", "data": []GroupBasic}
 // @Failure 200 {string} json{"code": -1, "message": "获取失败"}
-// @Router /contact/groupsList [post]
+// @Router /groupsList [post]
 func GroupsList(c *gin.Context) {
 	uid := c.Request.FormValue("userId")
 	groupList := models.GroupsList(uid)
@@ -551,11 +512,34 @@ func GetGroupList(c *gin.Context) {
 // @Router /contact/searchUsersByGroupId [post]
 func SearchUsersByGroupId(c *gin.Context) {
 	groupId := c.Request.FormValue("groupId")
-	data := make([]models.UserBasic, 0)
-	data = models.SearchUsersByGroupId(groupId)
+	data := models.SearchUsersByGroupId(groupId)
+	fmt.Println(data)
 	c.JSON(200, gin.H{
 		"code":    0,
 		"message": data,
 	})
 
+}
+
+// ListInOnePage
+// @Summary 给前端呈现列表
+// @Tags 界面模块
+// @Param userId formData string false "用户ID"
+// @Success 200 {string} json{"owner": {...}, "contactList": [...], "onLineList": [...], "groupList": [...]}
+// @Router /listInOnePage [post]
+func ListInOnePage(c *gin.Context) {
+	userId := c.PostForm("userId") // 使用 PostForm 获取表单值
+	// 打印一下
+	fmt.Println(userId)
+	data, err := models.ListInOnePage(userId)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error fetching user info"})
+		return
+	}
+	fmt.Println(data.Owner)
+	fmt.Println(data.GroupList)
+	fmt.Println(data.ContactList)
+	fmt.Println(data.OnLineList)
+	c.JSON(http.StatusOK, data)
 }

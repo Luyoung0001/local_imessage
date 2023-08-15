@@ -47,9 +47,9 @@ type Node struct {
 	GroupSets     set.Interface
 }
 
-func (table *Message) TableName() string {
-	return "message"
-}
+//func (table *Message) TableName() string {
+//	return "message"
+//}
 
 // 一个 userId 绑定一个 *Node
 // 引用传递,避免大量的值拷贝
@@ -255,13 +255,10 @@ func sendMsg(targetId string, data []byte) {
 
 	// 刷新消息创建时间
 	jsonMsg.CreateTime = uint64(time.Now().Unix())
-	// 从Redis 中获取在线信息
-	r, err := utils.Red.Get(ctx, "online_"+userIdStr).Result()
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	if r != "" {
+	
+	// 判断是否在线
+	isOnline := IsOnline(userIdStr)
+	if isOnline != false {
 		// 如果获取到了,说明用户在线
 		if ok {
 			// 后台打印消息

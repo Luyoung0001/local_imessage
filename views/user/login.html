@@ -1,74 +1,87 @@
-{{define "/user/login.shtml"}}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    {{template "/chat/head.shtml"}}
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>User Info</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
+
+    #user-info {
+      width: 900px;
+      margin: auto;
+      margin-top: 100px;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      border-radius: 5px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    p {
+      margin-bottom: 10px;
+      color: #555;
+      font-weight: bold;
+    }
+
+    span {
+      color: #007bff;
+    }
+  </style>
 </head>
 
 <body>
+  <div id="user-info">
+    <h2>联系人列表</h2>
+    <p>用户: <span id="owner"></span></p>
+    <p>联系人: <span id="contactList"></span></p>
+    <p>在线联系人: <span id="onLineList"></span></p>
+    <p>群列表: <span id="groupList"></span></p>
+  </div>
 
-<header class="mui-bar mui-bar-nav">
-    <h1 class="mui-title">登录</h1>
-</header>
-<div class="mui-content" id="pageapp">
-    <form id='login-form' class="mui-input-group">
-        <div class="mui-input-row">
-            <label>账号</label>
-            <input v-model="user.mobile" placeholder="请输入手机号" type="text" class="mui-input-clear mui-input">
-        </div>
-        <div class="mui-input-row">
-            <label>密码</label>
-            <input v-model="user.passwd" placeholder="请输入密码" type="password" class="mui-input-clear mui-input">
-        </div>
-    </form>
-    <div class="mui-content-padded">
-        <button @click="login" type="button" class="mui-btn mui-btn-block mui-btn-primary">登录</button>
-        <div class="link-area"><a id='reg' href="register.shtml">注册账号</a> <span class="spliter">|</span> <a
-                id='forgetPassword'>忘记密码</a>
-        </div>
-    </div>
-    <div class="mui-content-padded oauth-area">
-    </div>
-</div>
+  <script>
+    // 验证过,获取到了
+    var userId = "{{ . }}"; // 从 Go 传递的数据
+    // alert(userId);
+
+    const formData = new FormData();
+    formData.append('userId', userId);
+
+    fetch('/listInOnePage', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+      .then(data => {
+        const ownerName = data.owner.Name;
+        const contactList = data.contactList.map(contact => contact.Name).join(', ');
+        const onLineList = data.onLineList.map(online => online.Name).join(', ');
+        const groupList = data.groupList.map(group => group.Name).join(', ');
+
+        const ownerInfo = document.getElementById('owner');
+        const contactInfo = document.getElementById('contactList');
+        const onlineInfo = document.getElementById('onLineList');
+        const groupInfo = document.getElementById('groupList');
+
+        ownerInfo.textContent = ownerName;
+        contactInfo.textContent = contactList;
+        onlineInfo.textContent = onLineList;
+        groupInfo.textContent = groupList;
+      })
+      .catch(error => {
+        console.error('Error fetching user info:', error);
+      });
+  </script>
 </body>
 
 </html>
-<script>
-    var app = new Vue({
-        el: "#pageapp",
-        data: function () {
-            return {
-                user: {
-                    mobile: "",
-                    passwd: ""
-                }
-            }
-        },
-        methods: {
-            login: function () {
-                //检测手机号是否正确
-                console.log("login")
-                //检测密码是否为空
-
-                //网络请求
-                //封装了promis
-                util.post("/user/login", this.user).then(res => {
-                    console.log(res)
-                    if (res.code != 0) {
-                        mui.toast(res.msg)
-                    } else {
-                        var url = "/chat/index.shtml?id=" + res.data.id
-                            + "&token=" + res.data.token
-                        userInfo(res.data)
-                        userId(res.data.id)
-                        // localStorage.setItem('userInfo', JSON.stringify(res.data))
-                        location.href = url
-                        //mui.alert(url)
-                    }
-                })
-            },
-        }
-    })
-</script>
-{{end}}
